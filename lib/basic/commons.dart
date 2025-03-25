@@ -11,6 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wax/basic/methods.dart';
 
+import '../configs/android_version.dart';
+
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
@@ -127,7 +129,13 @@ Future<T?> chooseListDialog<T>(BuildContext context,
 
 Future saveImageFileToGallery(BuildContext context, String path) async {
   if (Platform.isAndroid) {
-    if (!(await Permission.storage.request()).isGranted) {
+    bool g;
+    if (androidVersion < 30) {
+      g = await Permission.storage.request().isGranted;
+    } else {
+      g = await Permission.manageExternalStorage.request().isGranted;
+    }
+    if (!g) {
       return;
     }
   }
