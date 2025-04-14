@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:wax/basic/methods.dart';
+import 'package:wax/screens/calculator_screen.dart';
 import '../basic/commons.dart';
 import '../configs/host.dart';
 import '../configs/login_state.dart';
@@ -139,6 +140,21 @@ class _FirstLoginScreenState extends State<FirstLoginScreen> {
                 _usernameField(),
                 _passwordField(),
                 hostSetting(),
+                Row(
+                  children: [
+                    MaterialButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return const CalculatorScreen();
+                          }),
+                        );
+                      },
+                      child: const Text("计算器"),
+                    ),
+                    Expanded(child: Container()),
+                  ],
+                ),
               ],
             ),
     );

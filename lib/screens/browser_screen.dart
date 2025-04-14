@@ -96,7 +96,6 @@ class _BrowserScreenState extends State<BrowserScreen>
             icon: const Icon(Icons.download),
           ),
           favAction(),
-          proAction(),
           _searchBar.getSearchAction(context),
           chooseCateAction(context),
           const BrowserBottomSheetAction(),
@@ -157,20 +156,6 @@ class _BrowserScreenState extends State<BrowserScreen>
         });
       },
       icon: const Icon(Icons.category),
-    );
-  }
-
-  Widget proAction() {
-    return IconButton(
-      onPressed: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (BuildContext context) {
-          return const ProScreen();
-        }));
-      },
-      icon: Icon(
-        isPro ? Icons.offline_bolt : Icons.offline_bolt_outlined,
-      ),
     );
   }
 

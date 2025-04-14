@@ -50,7 +50,8 @@ class _InitScreenState extends State<InitScreen> {
     await initDownloadThreadCount();
     autoCheckNewVersion();
     await initLogin();
-    if (await methods.loadProperty(k: "last_username") == "") {
+    if (await methods.loadProperty(k: "last_username") == "" &&
+        await methods.loadProperty(k: "ignoreLogin") == "") {
       Future.delayed(Duration.zero, () async {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (BuildContext context) {
