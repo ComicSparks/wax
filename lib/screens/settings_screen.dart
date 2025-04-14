@@ -3,7 +3,9 @@ import 'package:wax/configs/themes.dart';
 import 'package:wax/configs/versions.dart';
 import 'package:wax/screens/comic_histories_screen.dart';
 
+import '../configs/auto_clean.dart';
 import '../configs/login_state.dart';
+import '../configs/view_log_clean.dart';
 import '../configs/volume_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -37,6 +39,9 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           const Divider(),
           volumeControllerSetting(),
+          const Divider(),
+          viewLogCleanSetting(),
+          autoCleanSetting(),
           const Divider(),
         ],
       ),

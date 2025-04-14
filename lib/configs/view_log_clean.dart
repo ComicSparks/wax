@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../basic/commons.dart';
 import '../basic/methods.dart';
 
-const _propertyName = "auto_clean";
-late String autoClean;
+const _propertyName = "viewLog_clean";
+late String viewLogClean;
 
 Map<String, String> _nameMap(BuildContext context) => {
       (1000 * 3600 * 24 * 7).toString(): "一周",
@@ -11,36 +11,36 @@ Map<String, String> _nameMap(BuildContext context) => {
       (1000 * 3600 * 24 * 30 * 12).toString(): "一年",
     };
 
-Future initAutoClean() async {
-  autoClean = await methods.loadProperty(k: _propertyName);
-  if (autoClean == "") {
-    autoClean = "${(1000 * 3600 * 24 * 7)}";
+Future initViewLogClean() async {
+  viewLogClean = await methods.loadProperty(k: _propertyName);
+  if (viewLogClean == "") {
+    viewLogClean = "${(1000 * 3600 * 24 * 30)}";
   }
-  await methods.autoClean(time: int.parse(autoClean));
+  await methods.autoClearViewLog(time: int.parse(viewLogClean));
 }
 
-String autoCleanName(BuildContext context) {
-  return _nameMap(context)[autoClean] ?? "-";
+String viewLogCleanName(BuildContext context) {
+  return _nameMap(context)[viewLogClean] ?? "-";
 }
 
-Future chooseAutoClean(BuildContext context) async {
+Future chooseViewLogClean(BuildContext context) async {
   String? choose = await chooseMapDialog(context,
-      title: "自动清理",
+      title: "阅读记录保存时长",
       values: _nameMap(context).map((key, value) => MapEntry(value, key)));
   if (choose != null) {
     await methods.saveProperty(k: _propertyName, v: choose);
-    autoClean = choose;
+    viewLogClean = choose;
   }
 }
 
-Widget autoCleanSetting() {
+Widget viewLogCleanSetting() {
   return StatefulBuilder(
     builder: (BuildContext context, void Function(void Function()) setState) {
       return ListTile(
         title: const Text("自动清理"),
-        subtitle: Text(autoCleanName(context)),
+        subtitle: Text(viewLogCleanName(context)),
         onTap: () async {
-          await chooseAutoClean(context);
+          await chooseViewLogClean(context);
           setState(() {});
         },
       );

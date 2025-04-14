@@ -17,6 +17,7 @@ import '../configs/reader_slider_position.dart';
 import '../configs/reader_type.dart';
 import '../configs/themes.dart';
 import '../configs/versions.dart';
+import '../configs/view_log_clean.dart';
 import '../configs/volume_controller.dart';
 import 'app_screen.dart';
 import 'first_login_screen.dart';
@@ -33,6 +34,7 @@ class _InitScreenState extends State<InitScreen> {
     await initAndroidVersion();
     await initAndroidDisplayMode();
     await initAutoClean();
+    await initViewLogClean();
     await initReaderControllerType();
     await initReaderDirection();
     await initReaderSliderPosition();

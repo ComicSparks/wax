@@ -240,8 +240,12 @@ class Methods {
     return result.position.toInt();
   }
 
-  Future autoClearViewLog() async {
-    return _flatInvoke("autoClearViewLog", Empty());
+  Future autoClearViewLog({required int time}) async {
+    return _flatInvoke("autoClearViewLog",
+      AutoCleanQuery(
+        expire: $fixnum.Int64.fromInts(0, time),
+      ),
+    );
   }
 
   Future pushToDownloads(List<ComicSimple> list) {
