@@ -68,7 +68,7 @@ final _dark = ThemeData.dark().copyWith(
 
 const _propertyNameLight = "theme.light";
 const _propertyNameDark = "theme.dark";
-String _themeLight = "", _themeDark = "";
+String _themeLight = "pink", _themeDark = "dark";
 
 Future initTheme() async {
   _themeLight = await methods.loadProperty(k: _propertyNameLight);

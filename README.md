@@ -1,13 +1,23 @@
-wax
-===
+
+<div align="center">
+  <h1 align="center">
+    <img src="lib/assets/icon.png" width="200">
+    <br/>
+    Wax Comic
+
+
 [![license](https://img.shields.io/github/license/niuhuan/wax)](https://raw.githubusercontent.com/niuhuan/wax/master/LICENSE)
 [![releases](https://img.shields.io/github/v/release/niuhuan/wax)](https://github.com/niuhuan/wax/releases)
-[![downloads](https://img.shields.io/github/downloads/niuhuan/wax/total)](https://github.com/niuhuan/wax/releases)
+  </h1>
+</div>
+
+
+<br/>
+
 
 - 美观易用且无广告的漫画客户端, 能运行在Windows/MacOS/Linux/Android/IOS中。
 - 您的star和issue是对开发者的莫大鼓励, 可以源仓库下载最新的源码/安装包, 表示支持/提出建议。
 - 源仓库地址 [https://github.com/niuhuan/wax](https://github.com/niuhuan/wax)
-
 
 
 ## 技术架构
