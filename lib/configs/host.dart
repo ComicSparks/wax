@@ -6,6 +6,8 @@ import 'package:wax/basic/methods.dart';
 const _defaultHost = "https://www.wn01.uk";
 const _hostMap = {
   "https://www.wnacg01.cc": "01CC",
+  "https://wnacg.com": "COM",
+  "https://wnacg.ru": "RU",
 };
 
 late String host;
