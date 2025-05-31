@@ -151,9 +151,11 @@ class _BrowserScreenState extends State<BrowserScreen>
     return IconButton(
       onPressed: () async {
         final c = await chooseCate(context);
-        setState(() {
-          _cate = c;
-        });
+        if (c != null) {
+          setState(() {
+            _cate = c;
+          });
+        }
       },
       icon: const Icon(Icons.category),
     );

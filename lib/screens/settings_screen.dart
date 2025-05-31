@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wax/configs/host.dart';
 import 'package:wax/configs/themes.dart';
 import 'package:wax/configs/versions.dart';
 import 'package:wax/screens/comic_histories_screen.dart';
@@ -28,6 +29,7 @@ class SettingsScreen extends StatelessWidget {
           const VersionInfo(),
           const Divider(),
           const LoginStateSetting(),
+          hostSetting(),
           const Divider(),
           ListTile(
             title: const Text("历史记录"),

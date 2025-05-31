@@ -65,6 +65,7 @@ class _ExportingScreenState extends State<ExportingScreen> {
           const SizedBox(height: 20),
           exportToZipButton(),
           exportToCbzButton(),
+          exportToPdfButton(),
         ],
       ),
     );
@@ -138,6 +139,15 @@ class _ExportingScreenState extends State<ExportingScreen> {
     );
   }
 
+  Widget exportToPdfButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        _export(3);
+      },
+      child: const Text("导出到*.pdf"),
+    );
+  }
+
   void _export(int type) async {
     String? folder = await chooseFolder();
     if (folder == null) {
@@ -154,6 +164,7 @@ class _ExportingScreenState extends State<ExportingScreen> {
     } catch (e) {
       setState(() {
         _exportStatus = 3;
+        _exportMessage = e.toString();
       });
     }
   }
