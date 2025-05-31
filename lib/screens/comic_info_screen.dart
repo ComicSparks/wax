@@ -20,8 +20,8 @@ class ComicInfoScreen extends StatefulWidget {
 
 class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   late Future<ComicInfoResult> _future;
+  late Future<int> _postionFuture;
   late Future<bool> _hasDownloadFuture;
-  int position = 0;
 
   @override
   void didChangeDependencies() {
@@ -32,13 +32,13 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   @override
   void didPopNext() {
     Future.delayed(Duration.zero, () async {
-      position = await methods.loadViewLog(widget.comicSimple.id);
-      setState(() {});
+      setState(() {
+        _postionFuture = methods.loadViewLog(widget.comicSimple.id);
+      });
     });
   }
 
   Future<ComicInfoResult> _loadComic() async {
-    position = await methods.loadViewLog(widget.comicSimple.id);
     var info = await methods.comicInfo(widget.comicSimple.id);
     var _ = methods.saveViewInfo(widget.comicSimple); // 在后台线程保存浏览记录
     return info;
@@ -47,6 +47,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   @override
   void initState() {
     _future = _loadComic();
+    _postionFuture = methods.loadViewLog(widget.comicSimple.id);
     _hasDownloadFuture = methods.hasDownload(widget.comicSimple.id);
     super.initState();
   }
@@ -113,19 +114,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       body: Stack(
         children: [
           _body(),
-          if (position > 0)
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 100,
-                    bottom: 30,
-                  ),
-                  child: _readContinueButton(),
-                ),
-              ),
-            ),
+          _readContinueButton(),
           SafeArea(
             child: Align(
               alignment: Alignment.bottomRight,
@@ -161,6 +150,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       onRefresh: () async {
         setState(() {
           _future = _loadComic();
+          _postionFuture = methods.loadViewLog(widget.comicSimple.id);
         });
       },
       successBuilder:
@@ -254,25 +244,39 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   Widget _readContinueButton() {
     return FutureBuilder(
       key: const Key("CONTINUE_READ_BUTTON"),
-      future: _future,
-      builder: (BuildContext context, AsyncSnapshot<ComicInfoResult> snapshot) {
+      future: _postionFuture,
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError) {
-          return FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return ComicReaderScreen(
-                  comic: widget.comicSimple,
-                  initRank: position,
-                  loadResult: () {
-                    return methods.comicPages(widget.comicSimple.id);
-                  },
-                );
-              }));
-            },
-            child: const Icon(Icons.auto_stories),
-          );
+          final position = snapshot.requireData;
+          if (position > 0) {
+            return SafeArea(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 100,
+                    bottom: 30,
+                  ),
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return ComicReaderScreen(
+                          comic: widget.comicSimple,
+                          initRank: position,
+                          loadResult: () {
+                            return methods.comicPages(widget.comicSimple.id);
+                          },
+                        );
+                      }));
+                    },
+                    child: const Icon(Icons.auto_stories),
+                  ),
+                ),
+              ),
+            );
+          }
         }
         return Container();
       },
