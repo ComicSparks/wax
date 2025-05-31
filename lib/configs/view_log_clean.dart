@@ -37,7 +37,7 @@ Widget viewLogCleanSetting() {
   return StatefulBuilder(
     builder: (BuildContext context, void Function(void Function()) setState) {
       return ListTile(
-        title: const Text("自动清理"),
+        title: const Text("阅读记录保存时长"),
         subtitle: Text(viewLogCleanName(context)),
         onTap: () async {
           await chooseViewLogClean(context);
