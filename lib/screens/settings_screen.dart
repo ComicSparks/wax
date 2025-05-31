@@ -5,6 +5,7 @@ import 'package:wax/configs/versions.dart';
 import 'package:wax/screens/comic_histories_screen.dart';
 import 'package:wax/screens/pro_screen.dart';
 
+import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
@@ -46,6 +47,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           const Divider(),
           volumeControllerSetting(),
+          appOrientationWidget(),
           const Divider(),
           viewLogCleanSetting(),
           autoCleanSetting(),

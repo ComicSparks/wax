@@ -8,6 +8,7 @@ import 'package:wax/configs/pager_view_mode.dart';
 
 import '../configs/android_display_mode.dart';
 import '../configs/android_version.dart';
+import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
 import '../configs/download_thread_count.dart';
 import '../configs/login_state.dart';
@@ -48,6 +49,7 @@ class _InitScreenState extends State<InitScreen> {
     await initVolumeController();
     await reloadIsPro();
     await initDownloadThreadCount();
+    await initAppOrientation();
     autoCheckNewVersion();
     await initLogin();
     if (await methods.loadProperty(k: "last_username") == "" &&
