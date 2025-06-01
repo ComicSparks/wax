@@ -252,3 +252,8 @@ message PageQuery {
   int64 pageNumber = 1;
 }
 
+message ModifyPassword {
+  string username = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}

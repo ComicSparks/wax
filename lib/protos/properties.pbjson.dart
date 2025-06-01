@@ -668,3 +668,19 @@ const PageQuery$json = {
 final $typed_data.Uint8List pageQueryDescriptor = $convert.base64Decode(
     'CglQYWdlUXVlcnkSHgoKcGFnZU51bWJlchgBIAEoA1IKcGFnZU51bWJlcg==');
 
+@$core.Deprecated('Use modifyPasswordDescriptor instead')
+const ModifyPassword$json = {
+  '1': 'ModifyPassword',
+  '2': [
+    {'1': 'username', '3': 1, '4': 1, '5': 9, '10': 'username'},
+    {'1': 'oldPassword', '3': 2, '4': 1, '5': 9, '10': 'oldPassword'},
+    {'1': 'newPassword', '3': 3, '4': 1, '5': 9, '10': 'newPassword'},
+  ],
+};
+
+/// Descriptor for `ModifyPassword`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List modifyPasswordDescriptor = $convert.base64Decode(
+    'Cg5Nb2RpZnlQYXNzd29yZBIaCgh1c2VybmFtZRgBIAEoCVIIdXNlcm5hbWUSIAoLb2xkUGFzc3'
+    'dvcmQYAiABKAlSC29sZFBhc3N3b3JkEiAKC25ld1Bhc3N3b3JkGAMgASgJUgtuZXdQYXNzd29y'
+    'ZA==');
+

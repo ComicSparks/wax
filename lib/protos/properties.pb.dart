@@ -3182,6 +3182,84 @@ class PageQuery extends $pb.GeneratedMessage {
   void clearPageNumber() => clearField(1);
 }
 
+class ModifyPassword extends $pb.GeneratedMessage {
+  factory ModifyPassword({
+    $core.String? username,
+    $core.String? oldPassword,
+    $core.String? newPassword,
+  }) {
+    final $result = create();
+    if (username != null) {
+      $result.username = username;
+    }
+    if (oldPassword != null) {
+      $result.oldPassword = oldPassword;
+    }
+    if (newPassword != null) {
+      $result.newPassword = newPassword;
+    }
+    return $result;
+  }
+  ModifyPassword._() : super();
+  factory ModifyPassword.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ModifyPassword.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ModifyPassword', createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'username')
+    ..aOS(2, _omitFieldNames ? '' : 'oldPassword', protoName: 'oldPassword')
+    ..aOS(3, _omitFieldNames ? '' : 'newPassword', protoName: 'newPassword')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ModifyPassword clone() => ModifyPassword()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ModifyPassword copyWith(void Function(ModifyPassword) updates) => super.copyWith((message) => updates(message as ModifyPassword)) as ModifyPassword;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ModifyPassword create() => ModifyPassword._();
+  ModifyPassword createEmptyInstance() => create();
+  static $pb.PbList<ModifyPassword> createRepeated() => $pb.PbList<ModifyPassword>();
+  @$core.pragma('dart2js:noInline')
+  static ModifyPassword getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ModifyPassword>(create);
+  static ModifyPassword? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get username => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set username($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasUsername() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUsername() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get oldPassword => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set oldPassword($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasOldPassword() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearOldPassword() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get newPassword => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set newPassword($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasNewPassword() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearNewPassword() => clearField(3);
+}
+
 
 const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
 const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
