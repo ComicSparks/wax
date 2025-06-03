@@ -425,4 +425,11 @@ class Methods {
         ));
     return FetchComicResult.fromBuffer(buff);
   }
+
+  Future clearHistory() async {
+    return _flatInvoke(
+      "clearHistory",
+      Empty(),
+    );
+  }
 }
