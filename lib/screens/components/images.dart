@@ -33,8 +33,9 @@ class ComicImageProvider extends ImageProvider<ComicImageProvider> {
 
   Future<ui.Codec> _loadAsync(ComicImageProvider key) async {
     assert(key == this);
+    var lc = (await methods.cacheImage(url)).localPath;
     return PaintingBinding.instance!.instantiateImageCodec(
-      await File((await methods.cacheImage(url)).localPath).readAsBytes(),
+      await File(lc).readAsBytes(),
     );
   }
 
