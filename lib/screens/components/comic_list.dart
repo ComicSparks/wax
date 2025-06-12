@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wax/basic/methods.dart';
 import 'package:wax/protos/properties.pb.dart';
@@ -9,6 +11,15 @@ import 'package:fixnum/fixnum.dart' as $fixnum;
 import '../comic_info_screen.dart';
 import 'comic_info_card.dart';
 
+class PagerMenu {
+  final String name;
+  final FutureOr Function(ComicSimple item) callback;
+
+  PagerMenu({required this.name, required this.callback});
+}
+
+const List<PagerMenu> defaultPagerMenus = [];
+
 class ComicList extends StatefulWidget {
   final bool inScroll;
   final List<ComicSimple> data;
@@ -16,6 +27,7 @@ class ComicList extends StatefulWidget {
   final Widget? append;
   final ScrollController? controller;
   final Function? onScroll;
+  final List<PagerMenu> menus;
 
   const ComicList({
     Key? key,
@@ -25,6 +37,7 @@ class ComicList extends StatefulWidget {
     this.controller,
     this.inScroll = false,
     this.onScroll,
+    this.menus = defaultPagerMenus,
   }) : super(key: key);
 
   @override
@@ -74,7 +87,9 @@ class _ComicListState extends State<ComicList> {
               url: widget.data[i].cover,
               width: constraints.maxWidth,
               height: constraints.maxHeight,
-              addLongPressMenus: _buildDeleteMenu(widget.data[i]),
+              addLongPressMenus: widget.selected == null
+                  ? _buildDeleteMenu(widget.data[i])
+                  : null,
               ignoreFormat: true,
             );
           },
@@ -93,7 +108,6 @@ class _ComicListState extends State<ComicList> {
               setState(() {});
             };
       widgets.add(GestureDetector(
-        onLongPress: _buildDeleteDialog(widget.data[i]),
         onTap: callback,
         child: Stack(children: [
           card,
@@ -168,7 +182,8 @@ class _ComicListState extends State<ComicList> {
               setState(() {});
             };
       widgets.add(GestureDetector(
-        onLongPress: _buildDeleteDialog(widget.data[i]),
+        onLongPress:
+            widget.selected == null ? _buildDeleteDialog(widget.data[i]) : null,
         onTap: callback,
         child: Stack(children: [
           ComicInfoCard(widget.data[i]),
@@ -228,7 +243,8 @@ class _ComicListState extends State<ComicList> {
               setState(() {});
             };
       widgets.add(GestureDetector(
-        onLongPress: _buildDeleteDialog(widget.data[i]),
+        onLongPress:
+            widget.selected == null ? _buildDeleteDialog(widget.data[i]) : null,
         onTap: callback,
         child: Stack(children: [
           Card(
@@ -343,7 +359,8 @@ class _ComicListState extends State<ComicList> {
               setState(() {});
             };
       widgets.add(GestureDetector(
-        onLongPress: _buildDeleteDialog(widget.data[i]),
+        onLongPress:
+            widget.selected == null ? _buildDeleteDialog(widget.data[i]) : null,
         onTap: callback,
         child: Stack(children: [
           Column(
@@ -437,39 +454,55 @@ class _ComicListState extends State<ComicList> {
     }));
   }
 
-  GestureLongPressCallback? _buildDeleteDialog(ComicSimple data) {
-    if (data.favouriteId > 0) {
-      return () {
-        () async {
-          final choose = await chooseListDialog(
-            context,
-            title: "操作",
-            values: ["删除收藏", "取消"],
-          );
-          if (choose != null && choose == "删除收藏") {
-            try {
-              await methods.deleteFavourite(data.favouriteId);
-              data.favouriteId = $fixnum.Int64.fromInts(0, 0);
-              defaultToast(context, "删除成功, 刷新页面之后会消失");
-            } catch (e) {
-              defaultToast(context, "删除失败: $e");
+  GestureLongPressCallback? _buildDeleteDialog(ComicSimple cb) {
+    var menus = List<PagerMenu>.from(widget.menus);
+    if (cb.favouriteId > 0) {
+      menus.add(PagerMenu(
+        name: "删除收藏",
+        callback: (data) async {
+          try {
+            await methods.deleteFavourite(data.favouriteId);
+            data.favouriteId = $fixnum.Int64.fromInts(0, 0);
+            defaultToast(context, "删除成功, 刷新页面之后会消失");
+          } catch (e) {
+            defaultToast(context, "删除失败: $e");
+          }
+        },
+      ));
+    }
+    if (menus.isNotEmpty) {
+      return () async {
+        final choose = await chooseListDialog(
+          context,
+          title: "操作 ${cb.title}",
+          values: [
+            ...menus.map((e) => e.name),
+            "取消",
+          ],
+        );
+        if (choose != null) {
+          for (var menu in menus) {
+            if (menu.name == choose) {
+              await menu.callback(cb);
             }
           }
-        }();
+        }
       };
     }
     return null;
   }
 
   List<TextMenu>? _buildDeleteMenu(ComicSimple data) {
-    return data.favouriteId > 0
-        ? [
-            TextMenu(
-              "删除收藏",
-              deleteAction(data),
-            ),
-          ]
-        : null;
+    List<TextMenu> menus = widget.menus
+        .map((e) => TextMenu(e.name, () => e.callback(data)))
+        .toList();
+    if (data.favouriteId > 0) {
+      menus.add(TextMenu("删除收藏", deleteAction(data)));
+    }
+    if (menus.isNotEmpty) {
+      return menus;
+    }
+    return null;
   }
 
   void Function() deleteAction(ComicSimple data) {

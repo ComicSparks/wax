@@ -241,7 +241,8 @@ class Methods {
   }
 
   Future autoClearViewLog({required int time}) async {
-    return _flatInvoke("autoClearViewLog",
+    return _flatInvoke(
+      "autoClearViewLog",
       AutoCleanQuery(
         expire: $fixnum.Int64.fromInts(0, time),
       ),
@@ -430,6 +431,16 @@ class Methods {
     return _flatInvoke(
       "clearHistory",
       Empty(),
+    );
+  }
+
+  Future clearHistoryById($fixnum.Int64 id) async {
+    return _flatInvoke(
+      "clearHistoryById",
+      ComicInfoQuery(
+        host: host,
+        id: id,
+      ),
     );
   }
 }

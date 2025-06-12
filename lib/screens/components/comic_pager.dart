@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,9 +13,12 @@ import 'comic_list.dart';
 import 'content_builder.dart';
 
 class ComicPager extends StatefulWidget {
+  final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
 
-  const ComicPager({required this.onPage, Key? key}) : super(key: key);
+  const ComicPager(
+      {required this.onPage, this.menus = defaultPagerMenus, Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ComicPagerState();
@@ -40,17 +45,18 @@ class _ComicPagerState extends State<ComicPager> {
   Widget build(BuildContext context) {
     switch (currentPagerControllerMode) {
       case PagerControllerMode.stream:
-        return _StreamPager(onPage: widget.onPage);
+        return _StreamPager(onPage: widget.onPage, menus: widget.menus);
       case PagerControllerMode.pager:
-        return _PagerPager(onPage: widget.onPage);
+        return _PagerPager(onPage: widget.onPage, menus: widget.menus);
     }
   }
 }
 
 class _StreamPager extends StatefulWidget {
+  final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
 
-  const _StreamPager({Key? key, required this.onPage}) : super(key: key);
+  const _StreamPager({Key? key, required this.onPage, required this.menus}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _StreamPagerState();
@@ -181,6 +187,7 @@ class _StreamPagerState extends State<_StreamPager> {
             data: _data,
             selected: _selected,
             append: _buildLoadingCard(),
+            menus: widget.menus,
           ),
         ),
       ],
@@ -254,9 +261,10 @@ class _StreamPagerState extends State<_StreamPager> {
 }
 
 class _PagerPager extends StatefulWidget {
+  final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
 
-  const _PagerPager({Key? key, required this.onPage}) : super(key: key);
+  const _PagerPager({Key? key, required this.onPage, required this.menus}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PagerPagerState();
@@ -307,6 +315,7 @@ class _PagerPagerState extends State<_PagerPager> {
           body: ComicList(
             data: _data,
             selected: _selected,
+            menus: widget.menus,
           ),
         );
       },

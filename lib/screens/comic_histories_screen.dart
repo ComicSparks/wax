@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
+import 'package:wax/screens/components/comic_list.dart';
 
 import '../basic/methods.dart';
 import '../protos/properties.pb.dart';
@@ -47,6 +48,17 @@ class _ComicHistoriesScreenState extends State<ComicHistoriesScreen> {
       body: ComicPager(
         key: key,
         onPage: _onPage,
+        menus: [
+          PagerMenu(
+            name: "删除此条历史记录",
+            callback: (data) async {
+              await methods.clearHistoryById(data.id);
+              setState(() {
+                key = UniqueKey(); // Reset the pager
+              });
+            },
+          )
+        ],
       ),
     );
   }
