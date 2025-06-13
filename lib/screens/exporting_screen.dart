@@ -61,16 +61,21 @@ class _ExportingScreenState extends State<ExportingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Container(
+            margin: const EdgeInsets.only(left: 30, right: 30),
+            child: const Text("你如果选择了“下载中”或“下载失败”的漫画, 将跳过没有下载的页面"),
+          ),
           if (Platform.isAndroid)
             Container(
-              margin: const EdgeInsets.only(bottom: 30),
+              margin: const EdgeInsets.only(top: 10),
               child: const Text("安卓13以上请使用拥有全局“文件管理”权限的“文件管理器”查看导出的文件"),
             ),
           if (Platform.isIOS)
             Container(
-              margin: const EdgeInsets.only(bottom: 30),
+              margin: const EdgeInsets.only(top: 10),
               child: const Text("iOS设备请在“文件”应用中查看导出的文件"),
             ),
+          const SizedBox(height: 30),
           Text("您一共选择了 ${widget.selected.length} 部漫画"),
           const SizedBox(height: 20),
           exportToZipButton(),

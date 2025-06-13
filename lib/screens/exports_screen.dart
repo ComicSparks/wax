@@ -62,7 +62,9 @@ class _ExportsScreenState extends State<ExportsScreen> {
           final downloads = snapshot.requireData.downloads;
           List<ComicDownloadDto> items = [];
           for (var value in downloads) {
-            if (value.status == 1 && !value.deleting) {
+            if (
+                //value.status == 1 &&
+                !value.deleting) {
               items.add(value);
             }
           }
