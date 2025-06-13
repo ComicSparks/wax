@@ -56,7 +56,8 @@ class _StreamPager extends StatefulWidget {
   final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
 
-  const _StreamPager({Key? key, required this.onPage, required this.menus}) : super(key: key);
+  const _StreamPager({Key? key, required this.onPage, required this.menus})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _StreamPagerState();
@@ -96,6 +97,7 @@ class _StreamPagerState extends State<_StreamPager> {
   final List<ComicSimple> _data = [];
   List<ComicSimple>? _selected = null;
   late ScrollController _controller;
+  var _key = UniqueKey();
 
   @override
   void initState() {
@@ -118,6 +120,30 @@ class _StreamPagerState extends State<_StreamPager> {
         _controller.position.maxScrollExtent) {
       _join();
     }
+  }
+
+  Future _onJump() async {
+    if (_joining) {
+      defaultToast(context, "尚有页面数据正在加载中，请稍后");
+    }
+    // input page number
+    var input =
+        await displayTextInputDialog(context, src: _nextPage.toString());
+    if (input == null || input.isEmpty) {
+      return;
+    }
+    var num = int.tryParse(input);
+    if (num == null || num <= 0 || num > _maxPage) {
+      defaultToast(context, "请输入正确的页码");
+      return;
+    }
+    _data.clear();
+    _nextPage = num;
+    _joining = false;
+    _joinSuccess = true;
+    _key = UniqueKey();
+    setState(() {});
+    _join();
   }
 
   Widget? _buildLoadingCard() {
@@ -182,6 +208,7 @@ class _StreamPagerState extends State<_StreamPager> {
         _buildPagerBar(),
         Expanded(
           child: ComicList(
+            key: _key,
             controller: _controller,
             onScroll: _onScroll,
             data: _data,
@@ -214,7 +241,13 @@ class _StreamPagerState extends State<_StreamPager> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("已加载 ${_nextPage - 1} / $_maxPage 页"),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  _onJump();
+                },
+                child: Text("已加载 ${_nextPage - 1} / $_maxPage 页"),
+              ),
               Expanded(child: Container()),
               GestureDetector(
                 onTap: () {
@@ -264,7 +297,8 @@ class _PagerPager extends StatefulWidget {
   final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
 
-  const _PagerPager({Key? key, required this.onPage, required this.menus}) : super(key: key);
+  const _PagerPager({Key? key, required this.onPage, required this.menus})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PagerPagerState();
