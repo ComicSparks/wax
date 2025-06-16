@@ -305,7 +305,7 @@ jobs:
           name: 'nosign-${{ env.flutter_version }}.ipa'
           path: 'build/nosign.ipa'
           retention-days: 3
-      - if: matrix.config.target == 'android'
+      - if: ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
         name: 'Upload Artifact (Android)'
         uses: actions/upload-artifact@v4
         with:
