@@ -298,28 +298,28 @@ jobs:
         run: |
           sh scripts/sign-apk-github-actions.sh
 
-      - if: steps.need_build.outputs.need_build == 'true' && matrix.config.target == 'ios'
+      - if: matrix.config.target == 'ios'
         name: 'Upload Artifact (iOS)'
         uses: actions/upload-artifact@v4
         with:
           name: 'nosign-${{ env.flutter_version }}.ipa'
           path: 'build/nosign.ipa'
           retention-days: 3
-      - if: steps.need_build.outputs.need_build == 'true' && matrix.config.target == 'android'
+      - if: matrix.config.target == 'android'
         name: 'Upload Artifact (Android)'
         uses: actions/upload-artifact@v4
         with:
           name: 'app-release-${{ env.flutter_version }}.apk'
           path: 'build/app/outputs/flutter-apk/app-release.apk'
           retention-days: 3
-      - if: steps.need_build.outputs.need_build == 'true' && matrix.config.target == 'linux'
+      - if: matrix.config.target == 'linux'
         name: 'Upload Artifact (Linux)'
         uses: actions/upload-artifact@v4
         with:
           name: 'build-${{ env.flutter_version }}.AppImage'
           path: 'build/build.AppImage'
           retention-days: 3
-      - if: steps.need_build.outputs.need_build == 'true' && matrix.config.target == 'macos'
+      - if: matrix.config.target == 'macos'
         name: 'Upload Artifact (MacOS)'
         uses: actions/upload-artifact@v4
         with:
