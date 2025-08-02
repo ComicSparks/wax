@@ -6,6 +6,7 @@ on:
 env:
   flutter_channel: 'stable'
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  RUST_TOOLCHAIN: nightly-2024-12-02
 
 jobs:
 
@@ -125,6 +126,17 @@ jobs:
           flutter-version: ${{ env.flutter_version }}
           architecture: x64
 
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+      
+
+      - name: Install cargo tools (Android)
+        if: ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        run: |
+          cargo install --force cargo-ndk
+
       - name: Check core
         if: true
         uses: actions/checkout@v3
@@ -239,6 +251,8 @@ jobs:
       - name: Build (windows)
         if: true && matrix.config.target == 'windows'
         run: |
+          rustup target add x86_64-pc-windows-gnu
+          cargo build --manifest-path=wast/Cargo.toml --release --target x86_64-pc-windows-gnu
           hover build windows
           curl -JOL https://github.com/niuhuan/static-resources/releases/download/windows_build_tools/Resource_Hacker_5.1.8.zip
           Expand-Archive .\Resource_Hacker_5.1.8.zip
@@ -252,12 +266,19 @@ jobs:
       - name: Build (macos)
         if: true && matrix.config.target == 'macos'
         run: |
+          rustup target add x86_64-apple-darwin
+          rustup target add aarch64-apple-darwin
+          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=x86_64-apple-darwin
+          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=aarch64-apple-darwin
+          lipo -create -output macos/libwast.a wast/target/x86_64-apple-darwin/release/libwast.a  wast/target/aarch64-apple-darwin/release/libwast.a
           hover build darwin-dmg
           mv go/build/outputs/darwin-dmg-release/*.dmg build/build.dmg
 
       - name: Build (linux)
         if: true && matrix.config.target == 'linux'
         run: |
+          rustup target add x86_64-unknown-linux-gnu
+          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=x86_64-unknown-linux-gnu
           curl -JOL https://github.com/junmer/source-han-serif-ttf/raw/master/SubsetTTF/CN/SourceHanSerifCN-Regular.ttf
           mkdir -p fonts
           mv SourceHanSerifCN-Regular.ttf fonts/Roboto.ttf
@@ -273,21 +294,32 @@ jobs:
       - name: Build (ios)
         if: true && matrix.config.target == 'ios'
         run: |
+          rustup target add aarch64-apple-ios
+          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=aarch64-apple-ios
           sh scripts/build-ipa.sh
 
       - name: Build (android-arm32)
         if: true && matrix.config.target == 'android-arm32'
         run: |
+          rustup target add armv7-linux-androideabi
+          cd wast
+          cargo ndk -o ../android/app/src/main/jniLibs -t armeabi-v7a build
           sh scripts/build-apk-arm.sh
 
       - name: Build (android-arm64)
         if: true && matrix.config.target == 'android-arm64'
         run: |
+          rustup target add aarch64-linux-android
+          cd wast
+          cargo ndk -o ../android/app/src/main/jniLibs -t arm64-v8a build
           sh scripts/build-apk-arm64.sh
 
       - name: Build (android-x86_64)
         if: true && matrix.config.target == 'android-x86_64'
         run: |
+          rustup target add x86_64-linux-android
+          cd wast
+          cargo ndk -o ../android/app/src/main/jniLibs -t x86_64 build
           sh scripts/build-apk-x64.sh
 
       - name: Sign APK (Android)

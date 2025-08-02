@@ -15,6 +15,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		DD2B174E283794B400588822 /* Mobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD2B174D283794B400588822 /* Mobile.xcframework */; };
+		DD6BF1CC2E3CCECF00AD6BE1 /* libwast.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6BF1CB2E3CCECF00AD6BE1 /* libwast.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +49,7 @@
 		B6AA70A0FD71672700C4E38F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D959EB540F48844D171DEF54 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		DD2B174D283794B400588822 /* Mobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Mobile.xcframework; path = ../../go/mobile/lib/Mobile.xcframework; sourceTree = "<group>"; };
+		DD6BF1CB2E3CCECF00AD6BE1 /* libwast.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwast.a; sourceTree = SOURCE_ROOT; };
 		F30704F7C0FC3A30CB38E7BA /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,6 +60,7 @@
 			files = (
 				DD2B174E283794B400588822 /* Mobile.xcframework in Frameworks */,
 				22E7A0027957F43C3A1D4E0B /* Pods_Runner.framework in Frameworks */,
+				DD6BF1CC2E3CCECF00AD6BE1 /* libwast.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +100,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				DD6BF1CB2E3CCECF00AD6BE1 /* libwast.a */,
 				DD2B174D283794B400588822 /* Mobile.xcframework */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -372,6 +376,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = opensource.wax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = wax;
@@ -505,6 +513,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = opensource.wax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = wax;
@@ -531,6 +543,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = opensource.wax;
 				PRODUCT_NAME = "$(TARGET_NAME)";

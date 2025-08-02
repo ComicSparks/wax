@@ -53,3 +53,7 @@ go/mobile/lib/*.xcframework
 lib/assets/version.txt
 
 .vscode/
+
+*.a
+*.so
+target/

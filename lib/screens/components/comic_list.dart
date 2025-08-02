@@ -255,7 +255,6 @@ class _ComicListState extends State<ComicList> {
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
                   addLongPressMenus: _buildDeleteMenu(widget.data[i]),
-                  ignoreFormat: true,
                 );
                 return Stack(
                   children: [
