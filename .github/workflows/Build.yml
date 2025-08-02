@@ -211,6 +211,9 @@ jobs:
         if: true && ( matrix.config.target == 'linux' || matrix.config.target == 'windows' || matrix.config.target == 'macos')
         run: |
           go install github.com/go-flutter-desktop/hover@latest
+          cd go
+          go mod tidy
+          cd ..
 
       - name: Install go mobile (mobile)
         if: true && ( matrix.config.target == 'ios' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-arm32' || matrix.config.target == 'android-x86_64' )
