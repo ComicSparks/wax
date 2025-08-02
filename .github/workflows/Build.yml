@@ -307,6 +307,7 @@ jobs:
         run: |
           rustup target add aarch64-apple-ios
           cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=aarch64-apple-ios
+          cp wast/target/aarch64-apple-ios/release/libwast.a ios/
           sh scripts/build-ipa.sh
 
       - name: Build (android-arm32)
@@ -350,6 +351,13 @@ jobs:
         with:
           name: 'nosign-${{ env.flutter_version }}.ipa'
           path: 'build/nosign.ipa'
+          retention-days: 3
+      - if: matrix.config.target == 'windows'
+        name: 'Upload Artifact (Windows)'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'build-${{ env.flutter_version }}-${{ matrix.config.target }}.zip'
+          path: 'build/build.zip'
           retention-days: 3
       - if: ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
         name: 'Upload Artifact (Android)'
