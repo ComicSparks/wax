@@ -213,6 +213,7 @@ jobs:
           go install github.com/go-flutter-desktop/hover@latest
           cd go
           go get -u github.com/ihciah/rust2go/asmcall
+          go mod tidy
           cd ..
 
       - name: Install go mobile (mobile)
@@ -221,6 +222,9 @@ jobs:
           go install golang.org/x/mobile/cmd/gomobile@latest
           cd go
           go get -u github.com/ihciah/rust2go/asmcall
+          go mod tidy
+          gomobile init
+          go get golang.org/x/mobile/bind
           cd ..
 
       - name: Set-Version (All)
