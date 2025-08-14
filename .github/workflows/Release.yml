@@ -299,6 +299,8 @@ jobs:
       - name: Build (windows)
         if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'windows'
         run: |
+          rustup target add x86_64-pc-windows-gnu
+          cargo build --manifest-path=wast/Cargo.toml --release --target x86_64-pc-windows-gnu
           hover build windows
           curl -JOL https://github.com/ComicSparks/build-tools/releases/download/storage/Resource_Hacker_5.1.8.zip
           Expand-Archive .\Resource_Hacker_5.1.8.zip
