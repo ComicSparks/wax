@@ -9,10 +9,17 @@ import 'package:wax/basic/methods.dart';
 import '../basic/commons.dart';
 import '../screens/components/badge.dart';
 
-const _releasesUrl = "https://github.com/niuhuan/wax/releases";
-const _versionUrl = "https://api.github.com/repos/niuhuan/wax/releases/latest";
+const repoOwnerUrl = "https://api.github.com/repos/ComicSparks/glxx/releases/tags/wax";
+const _releasesUrl = "https://github.com/OWNER/wax/releases";
+const _versionUrl = "https://api.github.com/repos/OWNER/wax/releases/latest";
 const _versionAssets = 'lib/assets/version.txt';
 RegExp _versionExp = RegExp(r"^v\d+\.\d+.\d+$");
+
+Future _openRelease() async {
+  var owner = jsonDecode(await methods.httpGet(url: repoOwnerUrl))["body"].toString().trim();
+    print("owner: $owner");
+  openUrl(_releasesUrl.replaceAll("OWNER", owner));
+}
 
 late String _version;
 String? _latestVersion;
@@ -62,7 +69,9 @@ bool dirtyVersion() {
 // maybe exception
 Future _versionCheck() async {
   if (_versionExp.hasMatch(_version)) {
-    var json = jsonDecode(await methods.httpGet(url: _versionUrl));
+    var owner = jsonDecode(await methods.httpGet(url: repoOwnerUrl))["body"].toString().trim();
+    print("owner: $owner");
+    var json = jsonDecode(await methods.httpGet(url: _versionUrl.replaceAll("OWNER", owner)));
     if (json["name"] != null) {
       String latestVersion = (json["name"]);
       if (latestVersion != _version) {
@@ -147,7 +156,7 @@ class _VersionInfoState extends State<VersionInfo> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               recognizer: TapGestureRecognizer()
-                ..onTap = () => openUrl(_releasesUrl),
+                ..onTap = _openRelease,
             ),
           ],
         ),
@@ -191,7 +200,7 @@ class _VersionInfoState extends State<VersionInfo> {
             color: Theme.of(context).colorScheme.primary,
           ),
           recognizer: TapGestureRecognizer()
-            ..onTap = () => openUrl(_releasesUrl),
+            ..onTap = _openRelease,
         ),
       ),
     );
@@ -228,7 +237,7 @@ class _VersionInfoState extends State<VersionInfo> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               recognizer: TapGestureRecognizer()
-                ..onTap = () => openUrl(_releasesUrl),
+                ..onTap = _openRelease,
             ),
           ),
         ),

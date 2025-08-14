@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
 
-const _defaultHost = "https://www.wn01.uk";
+const _defaultHost = "https://www.wnacg01.cc";
 const _hostMap = {
   "https://www.wn03.ru": "03RU",
   "https://www.wnacg02.cc": "02CC",
