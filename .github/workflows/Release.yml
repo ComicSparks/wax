@@ -59,15 +59,15 @@ jobs:
           - target: windows
             host: windows-latest
             flutter_version: '2.10.3'
-            go_version: '1.17'
+            go_version: '1.23'
           - target: macos
             host: macos-latest
             flutter_version: '2.10.3'
-            go_version: '1.17'
+            go_version: '1.23'
           - target: linux
             host: ubuntu-latest
             flutter_version: '2.10.3'
-            go_version: '1.17'
+            go_version: '1.23'
           - target: ios
             host: macos-latest
             flutter_version: '3.10.5'
@@ -217,6 +217,11 @@ jobs:
           cmdline-tools-version: 8512546
           packages: 'platform-tools platforms;android-32 build-tools;30.0.2'
 
+      - if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        name: Setup cargo ndk (Android)
+        run: |
+          cargo install cargo-ndk
+  
       # - if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
       #   name: Install NDK
       #   run: sdkmanager "ndk;28.0.13004108"
