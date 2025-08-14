@@ -53,9 +53,14 @@ func main() {
 		releaseFileName = "z-of-" + releaseFileName
 	}
 	// get version
+	githubRepository := os.Getenv("GITHUB_REPOSITORY")
+	if githubRepository == "" {
+		println("Env ${GITHUB_REPOSITORY} is not set")
+		os.Exit(1)
+	}
 	getReleaseRequest, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("https://api.github.com/repos/%v/%v/releases/tags/%v", commons.Owner, commons.Repo, version.Code),
+		fmt.Sprintf("https://api.github.com/repos/%v/releases/tags/%v", githubRepository, version.Code),
 		nil,
 	)
 	if err != nil {

@@ -5,9 +5,7 @@ import (
 	"strings"
 )
 
-const Owner = "niuhuan"
-const Repo = "wax"
-const Ua = "niuhuan wax ci"
+const Ua = "wax ci"
 const MainBranch = "master"
 
 func LoadVersion() Version {

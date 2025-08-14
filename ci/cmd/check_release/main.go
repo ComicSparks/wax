@@ -20,9 +20,14 @@ func main() {
 	// get version
 	version := commons.LoadVersion()
 	// get version
+	githubRepository := os.Getenv("GITHUB_REPOSITORY")
+	if githubRepository == "" {
+		println("Env ${GITHUB_REPOSITORY} is not set")
+		os.Exit(1)
+	}
 	getReleaseRequest, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("https://api.github.com/repos/%v/%v/releases/tags/%v", commons.Owner, commons.Repo, version.Code),
+		fmt.Sprintf("https://api.github.com/repos/%v/releases/tags/%v", githubRepository, version.Code),
 		nil,
 	)
 	if err != nil {
@@ -36,7 +41,7 @@ func main() {
 	}
 	defer getReleaseResponse.Body.Close()
 	if getReleaseResponse.StatusCode == 404 {
-		url := fmt.Sprintf("https://api.github.com/repos/%v/%v/releases", commons.Owner, commons.Repo)
+		url := fmt.Sprintf("https://api.github.com/repos/%v/releases", githubRepository)
 		body := map[string]interface{}{
 			"tag_name":         version.Code,
 			"target_commitish": commons.MainBranch,

@@ -14,6 +14,11 @@ import (
 )
 
 func main() {
+	githubRepository := os.Getenv("GITHUB_REPOSITORY")
+	if githubRepository == "" {
+		println("Env ${GITHUB_REPOSITORY} is not set")
+		os.Exit(1)
+	}
 	// get version
 	var version commons.Version
 	codeFile, err := ioutil.ReadFile("version.code.txt")
@@ -32,7 +37,7 @@ func main() {
 			"更新内容:\n"+
 			"%v\n\n"+
 			"https://github.com/%v/%v/releases/tag/%v",
-		commons.Repo, version.Code, version.Info, commons.Owner, commons.Repo, version.Code,
+		githubRepository, version.Code, version.Info, githubRepository, githubRepository, version.Code,
 	)
 	// get accounts
 	tgToken := os.Getenv("TG_BOT_TOKEN")

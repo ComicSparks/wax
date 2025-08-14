@@ -87,9 +87,14 @@ func main() {
 	}
 	contentLength = info.Size()
 	// get version
+	githubRepository := os.Getenv("GITHUB_REPOSITORY")
+	if githubRepository == "" {
+		println("Env ${GITHUB_REPOSITORY} is not set")
+		os.Exit(1)
+	}
 	getReleaseRequest, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("https://api.github.com/repos/%v/%v/releases/tags/%v", commons.Owner, commons.Repo, version.Code),
+		fmt.Sprintf("https://api.github.com/repos/%v/releases/tags/%v", githubRepository, version.Code),
 		nil,
 	)
 	if err != nil {
@@ -120,7 +125,7 @@ func main() {
 		panic(err)
 	}
 	defer file.Close()
-	uploadUrl := fmt.Sprintf("https://uploads.github.com/repos/%v/%v/releases/%v/assets?name=%v", commons.Owner, commons.Repo, release.Id, releaseFileName)
+	uploadUrl := fmt.Sprintf("https://uploads.github.com/repos/%v/releases/%v/assets?name=%v", githubRepository, release.Id, releaseFileName)
 	uploadRequest, err := http.NewRequest("POST", uploadUrl, file)
 	if err != nil {
 		panic(err)

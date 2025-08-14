@@ -292,7 +292,7 @@ jobs:
         if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'windows'
         run: |
           hover build windows
-          curl -JOL https://github.com/niuhuan/static-resources/releases/download/windows_build_tools/Resource_Hacker_5.1.8.zip
+          curl -JOL https://github.com/ComicSparks/build-tools/releases/download/storage/Resource_Hacker_5.1.8.zip
           Expand-Archive .\Resource_Hacker_5.1.8.zip
           cmd /c "Resource_Hacker_5.1.8\ResourceHacker.exe" -open go\build\outputs\windows-release\wax.exe -save go\build\outputs\windows-release\wax.exe -action addskip -res go/assets/icon.ico -mask ICONGROUP,MAINICON,0
           cd go\build\outputs\windows-release
@@ -323,11 +323,6 @@ jobs:
           cat ci/linux_font.yaml >> pubspec.yaml
           hover build linux-appimage
           mv go/build/outputs/linux-appimage-release/*.AppImage build/build.AppImage
-
-      - name: Append application-identifier (ios)
-        if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'ios'
-        run: |
-          /usr/libexec/PlistBuddy -c 'Add :application-identifier string niuhuan.wax' ios/Runner/Info.plist
 
       - name: Build (ios)
         if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'ios'
