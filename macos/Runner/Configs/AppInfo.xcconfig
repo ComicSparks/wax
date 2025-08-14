@@ -11,4 +11,4 @@ PRODUCT_NAME = wax
 PRODUCT_BUNDLE_IDENTIFIER = opensource.wax
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022 niuhuan. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2022 opensource. All rights reserved.

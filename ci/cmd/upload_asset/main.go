@@ -13,9 +13,9 @@ import (
 
 func main() {
 	// get ghToken
-	ghToken := os.Getenv("GH_TOKEN")
+	ghToken := os.Getenv("GITHUB_TOKEN")
 	if ghToken == "" {
-		println("Env ${GH_TOKEN} is not set")
+		println("Env ${GITHUB_TOKEN} is not set")
 		os.Exit(1)
 	}
 	// get version
