@@ -107,11 +107,7 @@ class _InitScreenState extends State<InitScreen> {
                   ).createShader(bounds);
                 },
                 blendMode: BlendMode.dstIn,
-                child: Image.asset(
-                  "lib/assets/startup.png",
-                  width: newWidth,
-                  height: newHeight,
-                ),
+                child: const Text("Initializing..."),
               ),
             );
           },
