@@ -175,7 +175,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'niuhuan/wax-go-core'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           path: 'go'
 
       - name: Cache Flutter dependencies (Linux/Android)
