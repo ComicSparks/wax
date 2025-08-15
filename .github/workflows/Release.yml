@@ -305,6 +305,7 @@ jobs:
           curl -JOL https://github.com/ComicSparks/build-tools/releases/download/storage/Resource_Hacker_5.1.8.zip
           Expand-Archive .\Resource_Hacker_5.1.8.zip
           cmd /c "Resource_Hacker_5.1.8\ResourceHacker.exe" -open go\build\outputs\windows-release\wax.exe -save go\build\outputs\windows-release\wax.exe -action addskip -res go/assets/icon.ico -mask ICONGROUP,MAINICON,0
+          cp wast/target/x86_64-pc-windows-gnu/release/wast.dll go/build/outputs/windows-release/
           cd go\build\outputs\windows-release
           DEL flutter_engine.pdb
           DEL flutter_engine.exp
