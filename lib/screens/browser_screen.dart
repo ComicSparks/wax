@@ -108,26 +108,26 @@ class _BrowserScreenState extends State<BrowserScreen>
               }
             },
             itemBuilder: (context) =>
-            const [
+             [
               PopupMenuItem(value: 'history', child: Row(children: [
-                const Text(" "),
-                const Icon(Icons.history),
-                const Text(' 历 史 '),
+                 Text(" "),
+                 Icon(Icons.history),
+                 Text(' 历 史 '),
               ],)),
               PopupMenuItem(value: 'download', child: Row(children: [
-                const Text(" "),
-                const Icon(Icons.download),
-                const Text(' 下 载 '),
+                 Text(" "),
+                 Icon(Icons.download),
+                 Text(' 下 载 '),
               ],)),
               PopupMenuItem(value: 'fav', child: Row(children: [
-                const Text(" "),
-                const Icon(Icons.favorite),
-                const Text(' 收 藏 '),
+                 Text(" "),
+                 Icon(Icons.favorite),
+                 Text(' 收 藏 '),
               ],)),
               PopupMenuItem(value: 'rank', child: Row(children: [
-                const Text(" "),
-                const Icon(Icons.bar_chart_outlined),
-                const Text(' 排 行 '),
+                 Text(" "),
+                 Icon(Icons.bar_chart_outlined),
+                 Text(' 排 行 '),
               ],)),
             ],
           ),
