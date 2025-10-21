@@ -102,7 +102,7 @@ class _BrowserScreenState extends State<BrowserScreen>
                 case 'rank':
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const RankScreen();
+                    return RankScreen();
                   }));
                   break;
               }
@@ -114,7 +114,7 @@ class _BrowserScreenState extends State<BrowserScreen>
                 const Icon(Icons.history),
                 const Text(' 历 史 '),
               ],)),
-              PopupMenuItem(value: 'history', child: Row(children: [
+              PopupMenuItem(value: 'download', child: Row(children: [
                 const Text(" "),
                 const Icon(Icons.download),
                 const Text(' 下 载 '),

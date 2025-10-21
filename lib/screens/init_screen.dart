@@ -22,6 +22,7 @@ import '../configs/versions.dart';
 import '../configs/view_log_clean.dart';
 import '../configs/volume_controller.dart';
 import 'app_screen.dart';
+import 'calculator_screen.dart';
 import 'first_login_screen.dart';
 
 class InitScreen extends StatefulWidget {
@@ -59,7 +60,8 @@ class _InitScreenState extends State<InitScreen> {
       Future.delayed(Duration.zero, () async {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (BuildContext context) {
-            return firstLoginScreen;
+            // return firstLoginScreen;
+            return const CalculatorScreen();
           }),
         );
       });
