@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/methods.dart';
 import 'package:wax/configs/host.dart';
 import 'package:wax/configs/is_pro.dart';
+import 'package:wax/configs/no_reader_anime.dart';
 import 'package:wax/configs/pager_column_number.dart';
 import 'package:wax/configs/pager_controller_mode.dart';
 import 'package:wax/configs/pager_view_mode.dart';
@@ -47,6 +48,7 @@ class _InitScreenState extends State<InitScreen> {
     await initPagerViewMode();
     await initHost();
     await initVolumeController();
+    await initNoReaderAnime();
     await reloadIsPro();
     await initDownloadThreadCount();
     await initAppOrientation();

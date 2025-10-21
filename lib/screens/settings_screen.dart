@@ -9,6 +9,7 @@ import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
+import '../configs/no_reader_anime.dart';
 import '../configs/view_log_clean.dart';
 import '../configs/volume_controller.dart';
 
@@ -46,6 +47,7 @@ class SettingsScreen extends StatelessWidget {
           darkThemeSetting(),
           const Divider(),
           const Divider(),
+          noReaderAnimeSetting(),
           volumeControllerSetting(),
           appOrientationWidget(),
           const Divider(),

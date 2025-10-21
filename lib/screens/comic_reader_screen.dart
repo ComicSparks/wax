@@ -12,6 +12,7 @@ import '../../configs/reader_controller_type.dart';
 import '../../configs/reader_direction.dart';
 import '../../configs/reader_slider_position.dart';
 import '../../configs/reader_type.dart';
+import '../configs/no_reader_anime.dart';
 import '../configs/volume_controller.dart';
 import './components/content_error.dart';
 import './components/content_loading.dart';
@@ -169,7 +170,7 @@ Widget readerKeyboardHolder(Widget widget) {
 
 ////////////////////////////////
 
-bool noAnimation() => false;
+bool noAnimation() => noReaderAnime;
 
 Event<_ReaderControllerEventArgs> _readerControllerEvent =
     Event<_ReaderControllerEventArgs>();
