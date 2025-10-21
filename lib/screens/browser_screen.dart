@@ -9,6 +9,7 @@ import 'package:wax/screens/comic_histories_screen.dart';
 import 'package:wax/screens/downloads_screen.dart';
 import 'package:wax/screens/favourite_screen.dart';
 import 'package:wax/screens/pro_screen.dart';
+import 'package:wax/screens/rank_screen.dart';
 import 'package:wax/screens/search_screen.dart';
 
 import '../basic/cates.dart';
@@ -76,26 +77,61 @@ class _BrowserScreenState extends State<BrowserScreen>
       return AppBar(
         title: Text(_title()),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const ComicHistoriesScreen();
-              }));
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.document_scanner),
+            onSelected: (value) {
+              switch (value) {
+                case 'history':
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return const ComicHistoriesScreen();
+                  }));
+                  break;
+                case 'download':
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return const DownloadsScreen();
+                  }));
+                  break;
+                case 'fav':
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return const FavouriteScreen();
+                  }));
+                  break;
+                case 'rank':
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return const RankScreen();
+                  }));
+                  break;
+              }
             },
-            icon: const Icon(Icons.history),
+            itemBuilder: (context) =>
+            const [
+              PopupMenuItem(value: 'history', child: Row(children: [
+                const Text(" "),
+                const Icon(Icons.history),
+                const Text(' 历 史 '),
+              ],)),
+              PopupMenuItem(value: 'history', child: Row(children: [
+                const Text(" "),
+                const Icon(Icons.download),
+                const Text(' 下 载 '),
+              ],)),
+              PopupMenuItem(value: 'fav', child: Row(children: [
+                const Text(" "),
+                const Icon(Icons.favorite),
+                const Text(' 收 藏 '),
+              ],)),
+              PopupMenuItem(value: 'rank', child: Row(children: [
+                const Text(" "),
+                const Icon(Icons.bar_chart_outlined),
+                const Text(' 排 行 '),
+              ],)),
+            ],
           ),
           ...alwaysInActions(),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const DownloadsScreen();
-              }));
-            },
-            icon: const Icon(Icons.download),
-          ),
-          favAction(),
           _searchBar.getSearchAction(context),
           chooseCateAction(context),
           const BrowserBottomSheetAction(),
@@ -161,15 +197,4 @@ class _BrowserScreenState extends State<BrowserScreen>
     );
   }
 
-  Widget favAction() {
-    return IconButton(
-      onPressed: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (BuildContext context) {
-          return const FavouriteScreen();
-        }));
-      },
-      icon: const Icon(Icons.favorite),
-    );
-  }
 }
