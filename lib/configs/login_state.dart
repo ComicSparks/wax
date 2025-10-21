@@ -74,7 +74,7 @@ class _LoginDialogState extends State<_LoginDialog> {
         color: Colors.white,
       ),
       child: Material(
-        color: Colors.transparent,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           children: [
             Row(

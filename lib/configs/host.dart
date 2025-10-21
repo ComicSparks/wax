@@ -5,6 +5,9 @@ import 'package:wax/basic/methods.dart';
 
 const _defaultHost = "https://www.wnacg01.cc";
 const _hostMap = {
+  "https://www.wn04.ru": "04RU",
+  "https://www.wnacg05.cc": "05CC",
+  "https://www.wnacg03.cc": "03CC",
   "https://www.wn03.ru": "03RU",
   "https://www.wnacg02.cc": "02CC",
   "https://www.wnacg01.cc": "01CC",
