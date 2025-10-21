@@ -22,7 +22,9 @@ Widget noReaderAnimeSetting() {
         value: noReaderAnime,
         onChanged: (target) async {
           await methods.saveProperty(k: _propertyName, v: "$target");
-          setState(() {});
+          setState(() {
+            noReaderAnime = target;
+          });
         });
   });
 }

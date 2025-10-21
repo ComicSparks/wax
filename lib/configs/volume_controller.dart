@@ -23,7 +23,9 @@ Widget volumeControllerSetting() {
           value: volumeController,
           onChanged: (target) async {
             await methods.saveProperty(k: _propertyName, v: "$target");
-            setState(() {});
+            setState(() {
+              volumeController = target;
+            });
           });
     });
   }
