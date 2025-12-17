@@ -3260,6 +3260,286 @@ class ModifyPassword extends $pb.GeneratedMessage {
   void clearNewPassword() => clearField(3);
 }
 
+class ProInfoAll extends $pb.GeneratedMessage {
+  factory ProInfoAll({
+    ProInfoAf? proInfoAf,
+    ProInfoPat? proInfoPat,
+  }) {
+    final $result = create();
+    if (proInfoAf != null) {
+      $result.proInfoAf = proInfoAf;
+    }
+    if (proInfoPat != null) {
+      $result.proInfoPat = proInfoPat;
+    }
+    return $result;
+  }
+  ProInfoAll._() : super();
+  factory ProInfoAll.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ProInfoAll.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProInfoAll', createEmptyInstance: create)
+    ..aOM<ProInfoAf>(1, _omitFieldNames ? '' : 'proInfoAf', protoName: 'proInfoAf', subBuilder: ProInfoAf.create)
+    ..aOM<ProInfoPat>(2, _omitFieldNames ? '' : 'proInfoPat', protoName: 'proInfoPat', subBuilder: ProInfoPat.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ProInfoAll clone() => ProInfoAll()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ProInfoAll copyWith(void Function(ProInfoAll) updates) => super.copyWith((message) => updates(message as ProInfoAll)) as ProInfoAll;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ProInfoAll create() => ProInfoAll._();
+  ProInfoAll createEmptyInstance() => create();
+  static $pb.PbList<ProInfoAll> createRepeated() => $pb.PbList<ProInfoAll>();
+  @$core.pragma('dart2js:noInline')
+  static ProInfoAll getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProInfoAll>(create);
+  static ProInfoAll? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  ProInfoAf get proInfoAf => $_getN(0);
+  @$pb.TagNumber(1)
+  set proInfoAf(ProInfoAf v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasProInfoAf() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearProInfoAf() => clearField(1);
+  @$pb.TagNumber(1)
+  ProInfoAf ensureProInfoAf() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  ProInfoPat get proInfoPat => $_getN(1);
+  @$pb.TagNumber(2)
+  set proInfoPat(ProInfoPat v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasProInfoPat() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearProInfoPat() => clearField(2);
+  @$pb.TagNumber(2)
+  ProInfoPat ensureProInfoPat() => $_ensure(1);
+}
+
+class ProInfoAf extends $pb.GeneratedMessage {
+  factory ProInfoAf({
+    $core.bool? isPro,
+    $fixnum.Int64? expire,
+  }) {
+    final $result = create();
+    if (isPro != null) {
+      $result.isPro = isPro;
+    }
+    if (expire != null) {
+      $result.expire = expire;
+    }
+    return $result;
+  }
+  ProInfoAf._() : super();
+  factory ProInfoAf.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ProInfoAf.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProInfoAf', createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'isPro', protoName: 'isPro')
+    ..aInt64(2, _omitFieldNames ? '' : 'expire')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ProInfoAf clone() => ProInfoAf()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ProInfoAf copyWith(void Function(ProInfoAf) updates) => super.copyWith((message) => updates(message as ProInfoAf)) as ProInfoAf;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ProInfoAf create() => ProInfoAf._();
+  ProInfoAf createEmptyInstance() => create();
+  static $pb.PbList<ProInfoAf> createRepeated() => $pb.PbList<ProInfoAf>();
+  @$core.pragma('dart2js:noInline')
+  static ProInfoAf getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProInfoAf>(create);
+  static ProInfoAf? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get isPro => $_getBF(0);
+  @$pb.TagNumber(1)
+  set isPro($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasIsPro() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIsPro() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $fixnum.Int64 get expire => $_getI64(1);
+  @$pb.TagNumber(2)
+  set expire($fixnum.Int64 v) { $_setInt64(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasExpire() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearExpire() => clearField(2);
+}
+
+class ProInfoPat extends $pb.GeneratedMessage {
+  factory ProInfoPat({
+    $core.bool? isPro,
+    $core.String? patId,
+    $core.String? bindUid,
+    $fixnum.Int64? requestDelete,
+    $fixnum.Int64? reBind,
+    $core.int? errorType,
+    $core.String? errorMsg,
+    $core.String? accessKey,
+  }) {
+    final $result = create();
+    if (isPro != null) {
+      $result.isPro = isPro;
+    }
+    if (patId != null) {
+      $result.patId = patId;
+    }
+    if (bindUid != null) {
+      $result.bindUid = bindUid;
+    }
+    if (requestDelete != null) {
+      $result.requestDelete = requestDelete;
+    }
+    if (reBind != null) {
+      $result.reBind = reBind;
+    }
+    if (errorType != null) {
+      $result.errorType = errorType;
+    }
+    if (errorMsg != null) {
+      $result.errorMsg = errorMsg;
+    }
+    if (accessKey != null) {
+      $result.accessKey = accessKey;
+    }
+    return $result;
+  }
+  ProInfoPat._() : super();
+  factory ProInfoPat.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ProInfoPat.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProInfoPat', createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'isPro', protoName: 'isPro')
+    ..aOS(2, _omitFieldNames ? '' : 'patId', protoName: 'patId')
+    ..aOS(3, _omitFieldNames ? '' : 'bindUid', protoName: 'bindUid')
+    ..aInt64(4, _omitFieldNames ? '' : 'requestDelete', protoName: 'requestDelete')
+    ..aInt64(5, _omitFieldNames ? '' : 'reBind', protoName: 'reBind')
+    ..a<$core.int>(6, _omitFieldNames ? '' : 'errorType', $pb.PbFieldType.O3, protoName: 'errorType')
+    ..aOS(7, _omitFieldNames ? '' : 'errorMsg', protoName: 'errorMsg')
+    ..aOS(8, _omitFieldNames ? '' : 'accessKey', protoName: 'accessKey')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ProInfoPat clone() => ProInfoPat()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ProInfoPat copyWith(void Function(ProInfoPat) updates) => super.copyWith((message) => updates(message as ProInfoPat)) as ProInfoPat;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ProInfoPat create() => ProInfoPat._();
+  ProInfoPat createEmptyInstance() => create();
+  static $pb.PbList<ProInfoPat> createRepeated() => $pb.PbList<ProInfoPat>();
+  @$core.pragma('dart2js:noInline')
+  static ProInfoPat getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProInfoPat>(create);
+  static ProInfoPat? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get isPro => $_getBF(0);
+  @$pb.TagNumber(1)
+  set isPro($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasIsPro() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIsPro() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get patId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set patId($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasPatId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearPatId() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get bindUid => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set bindUid($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasBindUid() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearBindUid() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $fixnum.Int64 get requestDelete => $_getI64(3);
+  @$pb.TagNumber(4)
+  set requestDelete($fixnum.Int64 v) { $_setInt64(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasRequestDelete() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearRequestDelete() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $fixnum.Int64 get reBind => $_getI64(4);
+  @$pb.TagNumber(5)
+  set reBind($fixnum.Int64 v) { $_setInt64(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasReBind() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearReBind() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.int get errorType => $_getIZ(5);
+  @$pb.TagNumber(6)
+  set errorType($core.int v) { $_setSignedInt32(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasErrorType() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearErrorType() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.String get errorMsg => $_getSZ(6);
+  @$pb.TagNumber(7)
+  set errorMsg($core.String v) { $_setString(6, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasErrorMsg() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearErrorMsg() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.String get accessKey => $_getSZ(7);
+  @$pb.TagNumber(8)
+  set accessKey($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasAccessKey() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearAccessKey() => clearField(8);
+}
+
 
 const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
 const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

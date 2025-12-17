@@ -57,3 +57,6 @@ lib/assets/version.txt
 *.a
 *.so
 target/
+
+# FVM Version Cache
+.fvm/

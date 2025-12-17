@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -453,5 +454,26 @@ class Methods {
         id: id,
       ),
     );
+  }
+
+  Future setPatAccessKey(String accessKey) {
+    return _flatInvoke("setPatAccessKey", Puff(value: accessKey));
+  }
+
+  Future reloadPatAccount() {
+    return _flatInvoke("reloadPatAccount", Empty());
+  }
+
+  Future bindThisAccount() {
+    return _flatInvoke("bindThisAccount", Empty());
+  }
+
+  Future clearPat() {
+    return _flatInvoke("clearPat", Empty());
+  }
+
+  Future<ProInfoAll> proInfoAll() async {
+    final buff = await _flatInvoke("proInfoAll", Empty());
+    return ProInfoAll.fromBuffer(buff);
   }
 }

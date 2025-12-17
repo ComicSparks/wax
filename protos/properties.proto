@@ -257,3 +257,24 @@ message ModifyPassword {
   string oldPassword = 2;
   string newPassword = 3;
 }
+
+message ProInfoAll {
+  ProInfoAf proInfoAf = 1;
+  ProInfoPat proInfoPat = 2;
+}
+
+message ProInfoAf {
+  bool isPro = 1;
+  int64 expire = 2;
+}
+
+message ProInfoPat {
+  bool isPro = 1;
+  string patId = 2;
+  string bindUid = 3;
+  int64 requestDelete = 4;
+  int64 reBind = 5;
+  int32 errorType = 6;
+  string errorMsg = 7;
+  string accessKey = 8;
+}

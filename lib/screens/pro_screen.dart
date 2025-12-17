@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../basic/commons.dart';
 import '../basic/methods.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
+import 'access_key_replace_screen.dart';
 
 class ProScreen extends StatefulWidget {
   const ProScreen({Key? key}) : super(key: key);
@@ -22,7 +26,18 @@ class _ProScreenState extends State<ProScreen> {
         _username = value;
       });
     });
+    proEvent.subscribe(_setState);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    proEvent.unsubscribe(_setState);
+    super.dispose();
+  }
+
+  _setState(_) {
+    setState(() {});
   }
 
   @override
@@ -116,13 +131,30 @@ class _ProScreenState extends State<ProScreen> {
             ),
           ),
           const Divider(),
-          ListTile(
-            title: const Text("发电详情"),
-            subtitle: Text(
-              isPro
-                  ? "发电中 (${DateTime.fromMillisecondsSinceEpoch(1000 * isProEx).toString()})"
-                  : "未发电",
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ListTile(
+                  title: const Text("兑换发电"),
+                  subtitle: Text(
+                    proInfoAf.isPro
+                        ? "发电中 (${DateTime.fromMillisecondsSinceEpoch(1000 * proInfoAf.expire.toInt()).toString()})"
+                        : "未发电",
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListTile(
+                  title: const Text("Patreon 会员"),
+                  subtitle: Text(
+                    proInfoPat.isPro ? "发电中" : "未发电",
+                  ),
+                  onTap: () {
+                    defaultToast(context, "点击下方 Patreon 会员修改");
+                  },
+                ),
+              ),
+            ],
           ),
           const Divider(),
           ListTile(
@@ -166,9 +198,152 @@ class _ProScreenState extends State<ProScreen> {
           const Divider(),
           const ProServerNameWidget(),
           const Divider(),
+          ...patPro(),
+          const Divider(),
         ],
       ),
     );
+  }
+
+  List<Widget> patPro() {
+    List<Widget> widgets = [];
+    if (proInfoPat.accessKey.isNotEmpty) {
+      var text = "已记录密钥";
+      if (proInfoPat.patId.isNotEmpty) {
+        text += "\nPatreon账号 : ${proInfoPat.patId}";
+      }
+      if (proInfoPat.bindUid.isNotEmpty) {
+        text += "\n绑定的Wax账号 : ${proInfoPat.bindUid}";
+      }
+      if (proInfoPat.requestDelete > 0) {
+        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+          proInfoPat.requestDelete.toInt() * 1000,
+          isUtc: true,
+        );
+        String formattedDate =
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime.toLocal());
+        text += "\n绑定账号时间 : $formattedDate";
+      }
+      if (proInfoPat.reBind > 0) {
+        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+          proInfoPat.reBind.toInt() * 1000,
+          isUtc: true,
+        );
+        String formattedDate =
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime.toLocal());
+        text += "\n可重新绑定时间 : $formattedDate";
+      }
+      List<TextSpan> append = [];
+      if (proInfoPat.bindUid == "") {
+        append.add(const TextSpan(
+          text: "\n(请点击绑定到此账号)",
+          style: TextStyle(color: Colors.blue),
+        ));
+      } else if (proInfoPat.bindUid != _username) {
+        append.add(const TextSpan(
+          text: "\n(绑定的账号不是当前账号)",
+          style: TextStyle(color: Colors.red),
+        ));
+      } else if (proInfoPat.isPro == false) {
+        append.add(const TextSpan(
+          text: "\n(未检测到发电)",
+          style: TextStyle(color: Colors.orange),
+        ));
+      } else {
+        append.add(const TextSpan(
+          text: "\n(正常)",
+          style: TextStyle(color: Colors.green),
+        ));
+      }
+      widgets.add(ListTile(
+        onTap: () async {
+          print(proInfoPat.toString());
+          var choose = await chooseMapDialog<int>(
+            context,
+            title: "请选择",
+            values: {
+              "更新Patreon状态": 2,
+              "绑定到当前账号": 3,
+              "修改Patreon密钥": 1,
+              "清空Patreon信息": 4,
+            },
+          );
+          switch (choose) {
+            case 1:
+              addPatAccount();
+              break;
+            case 2:
+              reloadPatAccount();
+              break;
+            case 3:
+              bindThisAccount();
+              break;
+            case 4:
+              clearPat();
+              break;
+          }
+        },
+        title: const Text("Patreon 会员"),
+        subtitle: Text.rich(TextSpan(children: [
+          TextSpan(text: text),
+          ...append,
+        ])),
+      ));
+    } else {
+      widgets.add(ListTile(
+        onTap: () {
+          addPatAccount();
+        },
+        title: const Text("Patreon 会员"),
+        subtitle: const Text("点击绑定"),
+      ));
+    }
+    return widgets;
+  }
+
+  void addPatAccount() async {
+    print(proInfoPat.toString());
+    String? key = await displayTextInputDialog(context, title: "输入授权码");
+    if (key != null) {
+      await Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return AccessKeyReplaceScreen(accessKey: key);
+      }));
+    }
+  }
+
+  reloadPatAccount() async {
+    defaultToast(context, "请稍候");
+    try {
+      await methods.reloadPatAccount();
+      await reloadIsPro();
+      defaultToast(context, "SUCCESS");
+    } catch (e) {
+      defaultToast(context, "FAIL : $e");
+    } finally {
+      setState(() {});
+    }
+  }
+
+  bindThisAccount() async {
+    defaultToast(context, "请稍候");
+    try {
+      await methods.bindThisAccount();
+      await methods.reloadPatAccount();
+      await reloadIsPro();
+      defaultToast(context, "SUCCESS");
+    } catch (e) {
+      defaultToast(context, "FAIL : $e");
+    } finally {
+      setState(() {});
+    }
+  }
+
+  clearPat() async {
+    await methods.clearPat();
+    await reloadIsPro();
+    defaultToast(context, "Success");
+    setState(() {});
   }
 }
 

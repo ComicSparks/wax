@@ -684,3 +684,54 @@ final $typed_data.Uint8List modifyPasswordDescriptor = $convert.base64Decode(
     'dvcmQYAiABKAlSC29sZFBhc3N3b3JkEiAKC25ld1Bhc3N3b3JkGAMgASgJUgtuZXdQYXNzd29y'
     'ZA==');
 
+@$core.Deprecated('Use proInfoAllDescriptor instead')
+const ProInfoAll$json = {
+  '1': 'ProInfoAll',
+  '2': [
+    {'1': 'proInfoAf', '3': 1, '4': 1, '5': 11, '6': '.ProInfoAf', '10': 'proInfoAf'},
+    {'1': 'proInfoPat', '3': 2, '4': 1, '5': 11, '6': '.ProInfoPat', '10': 'proInfoPat'},
+  ],
+};
+
+/// Descriptor for `ProInfoAll`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List proInfoAllDescriptor = $convert.base64Decode(
+    'CgpQcm9JbmZvQWxsEigKCXByb0luZm9BZhgBIAEoCzIKLlByb0luZm9BZlIJcHJvSW5mb0FmEi'
+    'sKCnByb0luZm9QYXQYAiABKAsyCy5Qcm9JbmZvUGF0Ugpwcm9JbmZvUGF0');
+
+@$core.Deprecated('Use proInfoAfDescriptor instead')
+const ProInfoAf$json = {
+  '1': 'ProInfoAf',
+  '2': [
+    {'1': 'isPro', '3': 1, '4': 1, '5': 8, '10': 'isPro'},
+    {'1': 'expire', '3': 2, '4': 1, '5': 3, '10': 'expire'},
+  ],
+};
+
+/// Descriptor for `ProInfoAf`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List proInfoAfDescriptor = $convert.base64Decode(
+    'CglQcm9JbmZvQWYSFAoFaXNQcm8YASABKAhSBWlzUHJvEhYKBmV4cGlyZRgCIAEoA1IGZXhwaX'
+    'Jl');
+
+@$core.Deprecated('Use proInfoPatDescriptor instead')
+const ProInfoPat$json = {
+  '1': 'ProInfoPat',
+  '2': [
+    {'1': 'isPro', '3': 1, '4': 1, '5': 8, '10': 'isPro'},
+    {'1': 'patId', '3': 2, '4': 1, '5': 9, '10': 'patId'},
+    {'1': 'bindUid', '3': 3, '4': 1, '5': 9, '10': 'bindUid'},
+    {'1': 'requestDelete', '3': 4, '4': 1, '5': 3, '10': 'requestDelete'},
+    {'1': 'reBind', '3': 5, '4': 1, '5': 3, '10': 'reBind'},
+    {'1': 'errorType', '3': 6, '4': 1, '5': 5, '10': 'errorType'},
+    {'1': 'errorMsg', '3': 7, '4': 1, '5': 9, '10': 'errorMsg'},
+    {'1': 'accessKey', '3': 8, '4': 1, '5': 9, '10': 'accessKey'},
+  ],
+};
+
+/// Descriptor for `ProInfoPat`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List proInfoPatDescriptor = $convert.base64Decode(
+    'CgpQcm9JbmZvUGF0EhQKBWlzUHJvGAEgASgIUgVpc1BybxIUCgVwYXRJZBgCIAEoCVIFcGF0SW'
+    'QSGAoHYmluZFVpZBgDIAEoCVIHYmluZFVpZBIkCg1yZXF1ZXN0RGVsZXRlGAQgASgDUg1yZXF1'
+    'ZXN0RGVsZXRlEhYKBnJlQmluZBgFIAEoA1IGcmVCaW5kEhwKCWVycm9yVHlwZRgGIAEoBVIJZX'
+    'Jyb3JUeXBlEhoKCGVycm9yTXNnGAcgASgJUghlcnJvck1zZxIcCglhY2Nlc3NLZXkYCCABKAlS'
+    'CWFjY2Vzc0tleQ==');
+
