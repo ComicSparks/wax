@@ -12,7 +12,7 @@ class RankScreen extends StatefulWidget {
 }
 
 class _RankScreenState extends State<RankScreen> with TickerProviderStateMixin {
-  int _idx = 1;
+  int _idx = 0;
   late final TabController _tabController =
       TabController(length: 3, vsync: this, initialIndex: _idx);
 
@@ -31,6 +31,8 @@ class _RankScreenState extends State<RankScreen> with TickerProviderStateMixin {
       body: Column(children: [
         TabBar(
           controller: _tabController,
+          labelColor: Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.onSurface,
+          unselectedLabelColor: Theme.of(context).textTheme.bodyText2?.color ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           tabs: const [
             Tab(text: '日榜'),
             Tab(text: '周榜'),
@@ -55,13 +57,13 @@ class _RankScreenState extends State<RankScreen> with TickerProviderStateMixin {
   Future<FetchComicResult> _onPage(int page) {
     var rankType = "";
     switch (_idx) {
-      case 1:
+      case 0:
         rankType = "day";
         break;
-      case 2:
+      case 1:
         rankType = "week";
         break;
-      case 3:
+      case 2:
         rankType = "month";
         break;
     }

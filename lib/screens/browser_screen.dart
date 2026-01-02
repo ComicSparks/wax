@@ -78,7 +78,9 @@ class _BrowserScreenState extends State<BrowserScreen>
         title: Text(_title()),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.document_scanner),
+            icon: Icon(
+              Icons.document_scanner,
+            ),
             onSelected: (value) {
               switch (value) {
                 case 'history':
@@ -107,29 +109,31 @@ class _BrowserScreenState extends State<BrowserScreen>
                   break;
               }
             },
-            itemBuilder: (context) =>
-             [
-              PopupMenuItem(value: 'history', child: Row(children: [
-                 Text(" "),
-                 Icon(Icons.history),
-                 Text(' 历 史 '),
-              ],)),
-              PopupMenuItem(value: 'download', child: Row(children: [
-                 Text(" "),
-                 Icon(Icons.download),
-                 Text(' 下 载 '),
-              ],)),
-              PopupMenuItem(value: 'fav', child: Row(children: [
-                 Text(" "),
-                 Icon(Icons.favorite),
-                 Text(' 收 藏 '),
-              ],)),
-              PopupMenuItem(value: 'rank', child: Row(children: [
-                 Text(" "),
-                 Icon(Icons.bar_chart_outlined),
-                 Text(' 排 行 '),
-              ],)),
-            ],
+            itemBuilder: (context) {
+              final textColor = Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.onSurface;
+              return [
+                PopupMenuItem(value: 'history', child: Row(children: [
+                   Text(" "),
+                   Icon(Icons.history, color: textColor),
+                   Text(' 历 史 '),
+                ],)),
+                PopupMenuItem(value: 'download', child: Row(children: [
+                   Text(" "),
+                   Icon(Icons.download, color: textColor),
+                   Text(' 下 载 '),
+                ],)),
+                PopupMenuItem(value: 'fav', child: Row(children: [
+                   Text(" "),
+                   Icon(Icons.favorite, color: textColor),
+                   Text(' 收 藏 '),
+                ],)),
+                PopupMenuItem(value: 'rank', child: Row(children: [
+                   Text(" "),
+                   Icon(Icons.bar_chart_outlined, color: textColor),
+                   Text(' 排 行 '),
+                ],)),
+              ];
+            },
           ),
           ...alwaysInActions(),
           _searchBar.getSearchAction(context),
