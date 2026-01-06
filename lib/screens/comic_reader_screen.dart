@@ -284,12 +284,12 @@ abstract class _ComicReaderState extends State<_ComicReader> {
       switch (event) {
         case "UP":
           if (_current > 0) {
-            _needJumpTo(_current - 1, true);
+            _needJumpTo(_current - 1, !noAnimation());
           }
           break;
         case "DOWN":
           if (_current < widget.pagesResult.pages.length - 1) {
-            _needJumpTo(_current + 1, true);
+            _needJumpTo(_current + 1, !noAnimation());
           }
           break;
       }
@@ -1074,7 +1074,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
 
   @override
   _needJumpTo(int pageIndex, bool animation) {
-    if (animation) {
+    if (!noAnimation() && animation) {
       _pageController.animateToPage(
         pageIndex,
         duration: const Duration(milliseconds: 400),
