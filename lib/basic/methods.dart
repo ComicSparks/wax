@@ -379,6 +379,17 @@ class Methods {
     );
   }
 
+  Future renameFavoritesPartition(int id, String name) async {
+    return _flatInvoke(
+      "renameFavoritesPartition",
+      RenameFavoritesPartitionQuery(
+        host: host,
+        id: $fixnum.Int64.fromInts(0, id),
+        name: name,
+      ),
+    );
+  }
+
   Future favoriteComic(
     $fixnum.Int64? comicId,
     $fixnum.Int64? partitionId,

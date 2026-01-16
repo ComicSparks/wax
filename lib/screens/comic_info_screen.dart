@@ -320,32 +320,39 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             onPressed: () {
               () async {
                 try {
-                  // 获取所有收藏夹的名字
+                  // 获取所有收藏夹
                   var result = await methods.favoritesPartitions();
-                  // 找到默认分类
-                  FavoritesPartitionDto? dto;
-                  for (var value in result.partitionList) {
-                    if (value.name == "默认分类") {
-                      dto = value;
-                      break;
-                    }
-                  }
-                  // 如果没有则新建, 并且再次获取
-                  if (dto == null) {
+                  var partitions = result.partitionList;
+                  // 如果服务端还没有任何收藏夹，先创建一个默认分类
+                  if (partitions.isEmpty) {
                     await methods.createFavoritesPartition("默认分类");
+                    result = await methods.favoritesPartitions();
+                    partitions = result.partitionList;
                   }
-                  result = await methods.favoritesPartitions();
-                  for (var value in result.partitionList) {
-                    if (value.name == "默认分类") {
-                      dto = value;
-                      break;
+                  if (partitions.isEmpty) {
+                    defaultToast(context, "没有可用收藏夹");
+                    return;
+                  }
+
+                  FavoritesPartitionDto target;
+                  if (partitions.length > 1) {
+                    final chosen = await chooseEntity<FavoritesPartitionDto>(
+                      context,
+                      "选择收藏夹",
+                      partitions.map((e) => Entity(e.name, e)).toList(),
+                    );
+                    if (chosen == null) {
+                      return;
                     }
+                    target = chosen.value;
+                  } else {
+                    target = partitions.first;
                   }
-                  final dtoFinal = dto!;
-                  // 加入默认分类收藏夹
+
+                  // 加入收藏夹
                   await methods.favoriteComic(
                     widget.comicSimple.id,
-                    dtoFinal.id,
+                    target.id,
                   );
                   //
                   defaultToast(context, "收藏成功");
