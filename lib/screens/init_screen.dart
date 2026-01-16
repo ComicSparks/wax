@@ -16,7 +16,9 @@ import '../configs/login_state.dart';
 import '../configs/reader_controller_type.dart';
 import '../configs/reader_direction.dart';
 import '../configs/reader_slider_position.dart';
+import '../configs/reader_two_page_direction.dart';
 import '../configs/reader_type.dart';
+import '../configs/two_page_direction.dart';
 import '../configs/themes.dart';
 import '../configs/versions.dart';
 import '../configs/view_log_clean.dart';
@@ -42,6 +44,8 @@ class _InitScreenState extends State<InitScreen> {
     await initReaderDirection();
     await initReaderSliderPosition();
     await initReaderType();
+    await initTwoPageDirection();
+    await initReaderTwoPageDirection();
     await initVersion();
     await initTheme();
     await initPagerColumnCount();

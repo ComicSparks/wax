@@ -6,12 +6,13 @@ import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wax/protos/properties.pb.dart';
-import '../../basic/commons.dart';
 import '../../basic/methods.dart';
 import '../../configs/reader_controller_type.dart';
 import '../../configs/reader_direction.dart';
 import '../../configs/reader_slider_position.dart';
+import '../../configs/reader_two_page_direction.dart';
 import '../../configs/reader_type.dart';
+import '../../configs/two_page_direction.dart';
 import '../configs/no_reader_anime.dart';
 import '../configs/volume_controller.dart';
 import './components/content_error.dart';
@@ -211,6 +212,8 @@ class _ComicReader extends StatefulWidget {
         return _ComicReaderGalleryState();
       case ReaderType.webToonFreeZoom:
         return _ListViewReaderState();
+      case ReaderType.twoPageGallery:
+        return _ComicReaderTwoPageGalleryState();
     }
   }
 }
@@ -281,15 +284,21 @@ abstract class _ComicReaderState extends State<_ComicReader> {
   void _onPageControl(_ReaderControllerEventArgs? args) {
     if (args != null) {
       var event = args.key;
+      final step = currentReaderType == ReaderType.twoPageGallery ? 2 : 1;
       switch (event) {
         case "UP":
           if (_current > 0) {
-            _needJumpTo(_current - 1, !noAnimation());
+            var target = _current - step;
+            if (target < 0) target = 0;
+            _needJumpTo(target, !noAnimation());
           }
           break;
         case "DOWN":
           if (_current < widget.pagesResult.pages.length - 1) {
-            _needJumpTo(_current + 1, !noAnimation());
+            var target = _current + step;
+            final max = widget.pagesResult.pages.length - 1;
+            if (target > max) target = max;
+            _needJumpTo(target, !noAnimation());
           }
           break;
       }
@@ -800,6 +809,36 @@ class _SettingPanelState extends State<_SettingPanel> {
             ),
           ],
         ),
+        if (currentReaderType == ReaderType.twoPageGallery) ...[
+          ListTile(
+            title: const Text(
+              "双页方向",
+              style: TextStyle(color: Colors.white),
+            ),
+            subtitle: Text(
+              twoPageDirectionName(currentTwoPageDirection),
+              style: const TextStyle(color: Colors.white70),
+            ),
+            onTap: () async {
+              await chooseTwoPageDirection(context);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            title: const Text(
+              "双页排列",
+              style: TextStyle(color: Colors.white),
+            ),
+            subtitle: Text(
+              readerTwoPageDirectionName(currentReaderTwoPageDirection),
+              style: const TextStyle(color: Colors.white70),
+            ),
+            onTap: () async {
+              await chooseReaderTwoPageDirection(context);
+              setState(() {});
+            },
+          ),
+        ],
       ],
     );
   }
@@ -1292,5 +1331,189 @@ class _ListViewReaderState extends _ComicReaderState
       });
       _animationController.forward(from: 0);
     }
+  }
+}
+
+class _ComicReaderTwoPageGalleryState extends _ComicReaderState {
+  late PageController _pageController;
+  late PhotoViewGallery _gallery;
+  late final int _spreadCount;
+
+  @override
+  void initState() {
+    _spreadCount = (widget.pagesResult.pages.length + 1) ~/ 2;
+    _pageController = PageController(initialPage: widget.startIndex ~/ 2);
+    _gallery = PhotoViewGallery.builder(
+      scrollDirection: widget.readerDirection == ReaderDirection.topToBottom
+          ? Axis.vertical
+          : Axis.horizontal,
+      reverse: widget.readerDirection == ReaderDirection.rightToLeft,
+      backgroundDecoration: const BoxDecoration(color: Colors.black),
+      pageController: _pageController,
+      onPageChanged: _onGalleryPageChange,
+      itemCount: _spreadCount,
+      allowImplicitScrolling: true,
+      builder: (BuildContext context, int spreadIndex) {
+        final leftIndex = spreadIndex * 2;
+        final rightIndex = leftIndex + 1;
+
+        Widget left = _buildPageImage(leftIndex);
+        Widget right = rightIndex < widget.pagesResult.pages.length
+            ? _buildPageImage(rightIndex)
+            : const SizedBox.shrink();
+
+        if (currentTwoPageDirection == TwoPageDirection.rightToLeft) {
+          final tmp = left;
+          left = right;
+          right = tmp;
+        }
+
+        late Alignment leftAlignment, rightAlignment;
+        switch (currentReaderTwoPageDirection) {
+          case ReaderTwoPageDirection.closeTo:
+            leftAlignment = Alignment.centerRight;
+            rightAlignment = Alignment.centerLeft;
+            break;
+          case ReaderTwoPageDirection.pullAway:
+            leftAlignment = Alignment.centerLeft;
+            rightAlignment = Alignment.centerRight;
+            break;
+          case ReaderTwoPageDirection.eachCentered:
+            leftAlignment = Alignment.center;
+            rightAlignment = Alignment.center;
+            break;
+        }
+
+        return PhotoViewGalleryPageOptions.customChild(
+          filterQuality: FilterQuality.high,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final w = constraints.hasBoundedWidth
+                  ? constraints.maxWidth
+                  : MediaQuery.of(context).size.width;
+              final h = constraints.hasBoundedHeight
+                  ? constraints.maxHeight
+                  : MediaQuery.of(context).size.height;
+              return SizedBox(
+                width: w,
+                height: h,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: w / 2,
+                      height: h,
+                      child: Align(
+                        alignment: leftAlignment,
+                        child: left,
+                      ),
+                    ),
+                    SizedBox(
+                      width: w / 2,
+                      height: h,
+                      child: Align(
+                        alignment: rightAlignment,
+                        child: right,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+    super.initState();
+  }
+
+  Widget _buildPageImage(int index) {
+    if (index < 0 || index >= widget.pagesResult.pages.length) {
+      return const SizedBox.shrink();
+    }
+    return Image(
+      image: ComicImageProvider(url: widget.pagesResult.pages[index].url),
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (b, e, s) {
+        print("$e,$s");
+        return const Center(
+          child: Icon(Icons.broken_image_outlined, color: Colors.white70),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget _buildViewer() {
+    return Column(
+      children: [
+        Container(height: _fullScreen ? 0 : super._appBarHeight()),
+        Expanded(
+          child: Stack(
+            children: [
+              _gallery,
+              _buildNextEpController(),
+            ],
+          ),
+        ),
+        Container(height: _fullScreen ? 0 : super._bottomBarHeight()),
+      ],
+    );
+  }
+
+  @override
+  _needJumpTo(int pageIndex, bool animation) {
+    final target = pageIndex ~/ 2;
+    if (!noAnimation() && animation) {
+      _pageController.animateToPage(
+        target,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.ease,
+      );
+    } else {
+      _pageController.jumpToPage(target);
+    }
+  }
+
+  void _onGalleryPageChange(int spreadIndex) {
+    super._onCurrentChange(spreadIndex * 2);
+  }
+
+  Widget _buildNextEpController() {
+    if (super._fullscreenController()) {
+      return Container();
+    }
+    if (_current < widget.pagesResult.pages.length - 2) return Container();
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding:
+              const EdgeInsets.only(left: 10, right: 10, top: 4, bottom: 4),
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+            ),
+            color: Color(0x88000000),
+          ),
+          child: GestureDetector(
+            onTap: super._onCloseAction,
+            child: const Text(
+              '结束阅读',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

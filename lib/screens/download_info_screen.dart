@@ -152,6 +152,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                       padding: const EdgeInsets.only(right: 30, bottom: 30),
                       child: FloatingActionButton(
                         key: const Key("READ_BUTTON"),
+                        heroTag: "download_info_read",
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) {
@@ -199,6 +200,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                     child: Padding(
                       padding: const EdgeInsets.only(right: 100, bottom: 30),
                       child: FloatingActionButton(
+                        heroTag: "download_info_continue_read",
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) {

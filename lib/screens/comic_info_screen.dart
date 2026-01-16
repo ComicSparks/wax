@@ -259,6 +259,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                     bottom: 30,
                   ),
                   child: FloatingActionButton(
+                    heroTag: "comic_info_continue_read",
                     onPressed: () {
                       Navigator.of(context).push(
                           MaterialPageRoute(builder: (BuildContext context) {
@@ -291,6 +292,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             !snapshot.hasError) {
           return FloatingActionButton(
             key: const Key("READ_BUTTON"),
+            heroTag: "comic_info_read",
             onPressed: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -317,6 +319,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError) {
           return FloatingActionButton(
+            heroTag: "comic_info_favourite",
             onPressed: () {
               () async {
                 try {
