@@ -390,6 +390,17 @@ class Methods {
     );
   }
 
+  Future deleteFavoritesPartition(int id) async {
+    return _flatInvoke(
+      "deleteFavoritesPartition",
+      RenameFavoritesPartitionQuery(
+        host: host,
+        id: $fixnum.Int64.fromInts(0, id),
+        name: "",
+      ),
+    );
+  }
+
   Future favoriteComic(
     $fixnum.Int64? comicId,
     $fixnum.Int64? partitionId,

@@ -114,7 +114,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.arrow_drop_down),
+              Icon(Icons.arrow_drop_down),
             ],
           ),
         ),
@@ -122,7 +122,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
           ...alwaysInActions(),
           IconButton(
             onPressed: _openPartitionManager,
-            icon: const Icon(Icons.folder_open),
+            icon: Icon(Icons.folder_open),
             tooltip: "收藏夹管理",
           ),
           const BrowserBottomSheetAction(),
@@ -232,7 +232,7 @@ class _FavoritesPartitionManageSheetState
             ListTile(
               title: const Text("收藏夹管理"),
               trailing: IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -246,28 +246,67 @@ class _FavoritesPartitionManageSheetState
                 child: ListView(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.add),
+                      leading: Icon(Icons.add),
                       title: const Text("新建收藏夹"),
                       onTap: _create,
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.all_inbox),
+                      leading: Icon(Icons.all_inbox),
                       title: const Text("全部"),
+                      subtitle: const Text("所有收藏的漫画"),
                       selected: widget.currentPartitionId == 0,
                       onTap: () => Navigator.of(context).pop(0),
                     ),
                     ..._partitions.map(
                       (p) => ListTile(
-                        leading: const Icon(Icons.folder),
+                        leading: Icon(Icons.folder),
                         title: Text(p.name),
                         subtitle: Text("ID: ${p.id}"),
                         selected: widget.currentPartitionId == p.id.toInt(),
                         onTap: () => Navigator.of(context).pop(p.id.toInt()),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.edit),
-                          tooltip: "重命名",
-                          onPressed: () => _rename(p),
+                        trailing: PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert),
+                          onSelected: (value) async {
+                            if (value == "rename") {
+                              await _rename(p);
+                              return;
+                            }
+                            if (value == "delete") {
+                              final choose = await chooseListDialog<String>(
+                                context,
+                                title: "删除收藏夹 ${p.name} ?",
+                                values: ["删除", "取消"],
+                              );
+                              if (choose != "删除") {
+                                return;
+                              }
+                              try {
+                                await methods.deleteFavoritesPartition(
+                                  p.id.toInt(),
+                                );
+                                defaultToast(context, "删除成功");
+                                if (widget.currentPartitionId ==
+                                    p.id.toInt()) {
+                                  Navigator.of(context).pop(0);
+                                  return;
+                                }
+                                await _load();
+                              } catch (e) {
+                                defaultToast(context, "删除失败: $e");
+                              }
+                            }
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(
+                              value: "rename",
+                              child: Text("编辑名称"),
+                            ),
+                            PopupMenuItem(
+                              value: "delete",
+                              child: Text("删除收藏夹"),
+                            ),
+                          ],
                         ),
                       ),
                     ),
