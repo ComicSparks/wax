@@ -1049,6 +1049,10 @@ class _ComicReaderGalleryState extends _ComicReaderState {
   late PageController _pageController;
   late PhotoViewGallery _gallery;
 
+  bool get _disableGalleryGestures =>
+      currentReaderControllerType == ReaderControllerType.touchDouble ||
+      currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext;
+
   @override
   void initState() {
     _pageController = PageController(initialPage: widget.startIndex);
@@ -1069,6 +1073,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
       allowImplicitScrolling: true,
       builder: (BuildContext context, int index) {
         return PhotoViewGalleryPageOptions(
+          disableGestures: _disableGalleryGestures,
           filterQuality: FilterQuality.high,
           imageProvider: ComicImageProvider(
             url: widget.pagesResult.pages[index].url,
@@ -1339,6 +1344,10 @@ class _ComicReaderTwoPageGalleryState extends _ComicReaderState {
   late PhotoViewGallery _gallery;
   late final int _spreadCount;
 
+  bool get _disableGalleryGestures =>
+      currentReaderControllerType == ReaderControllerType.touchDouble ||
+      currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext;
+
   @override
   void initState() {
     _spreadCount = (widget.pagesResult.pages.length + 1) ~/ 2;
@@ -1385,6 +1394,7 @@ class _ComicReaderTwoPageGalleryState extends _ComicReaderState {
         }
 
         return PhotoViewGalleryPageOptions.customChild(
+          disableGestures: _disableGalleryGestures,
           filterQuality: FilterQuality.high,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
