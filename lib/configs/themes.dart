@@ -10,6 +10,10 @@ final _pink = ThemeData.light().copyWith(
   colorScheme: ColorScheme.light(
     secondary: Colors.pink.shade200,
   ),
+  listTileTheme: ListTileThemeData(
+    selectedTileColor: Colors.black.withOpacity(.05),
+    selectedColor: Colors.black87,
+  ),
   appBarTheme: AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle.light,
     color: Colors.pink.shade200,
@@ -39,6 +43,10 @@ final _dark = ThemeData.dark().copyWith(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.light(
     secondary: Colors.pink.shade200,
+  ),
+  listTileTheme: const ListTileThemeData(
+    selectedTileColor: Color(0x1FFFFFFF),
+    selectedColor: Colors.white,
   ),
   appBarTheme: const AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle.light,

@@ -2,7 +2,7 @@ name: wax
 description: A comic reader.
 publish_to: 'none'
 
-version: 1.3.11+17
+version: 1.3.12+18
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
