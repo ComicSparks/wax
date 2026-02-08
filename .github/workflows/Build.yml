@@ -27,15 +27,15 @@ jobs:
           - target: windows
             host: windows-latest
             flutter_version: '2.10.3'
-            go_version: '1.24'
+            go_version: '1.17'
           - target: macos
             host: macos-latest
             flutter_version: '2.10.3'
-            go_version: '1.24'
+            go_version: '1.23'
           - target: linux
             host: ubuntu-latest
             flutter_version: '2.10.3'
-            go_version: '1.24'
+            go_version: '1.17'
           - target: ios
             host: macos-latest
             flutter_version: '3.10.5'
@@ -379,4 +379,3 @@ jobs:
         with:
           name: 'build-${{ env.flutter_version }}.dmg'
           path: 'build/build.dmg'
-

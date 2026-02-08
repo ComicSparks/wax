@@ -145,12 +145,12 @@ class _ProScreenState extends State<ProScreen> {
               ),
               Expanded(
                 child: ListTile(
-                  title: const Text("Patreon 会员"),
+                  title: const Text("PAT 会员"),
                   subtitle: Text(
                     proInfoPat.isPro ? "发电中" : "未发电",
                   ),
                   onTap: () {
-                    defaultToast(context, "点击下方 Patreon 会员修改");
+                    defaultToast(context, "点击下方 PAT 会员修改");
                   },
                 ),
               ),
@@ -210,7 +210,7 @@ class _ProScreenState extends State<ProScreen> {
     if (proInfoPat.accessKey.isNotEmpty) {
       var text = "已记录密钥";
       if (proInfoPat.patId.isNotEmpty) {
-        text += "\nPatreon账号 : ${proInfoPat.patId}";
+        text += "\nPAT账号 : ${proInfoPat.patId}";
       }
       if (proInfoPat.bindUid.isNotEmpty) {
         text += "\n绑定的Wax账号 : ${proInfoPat.bindUid}";
@@ -262,10 +262,10 @@ class _ProScreenState extends State<ProScreen> {
             context,
             title: "请选择",
             values: {
-              "更新Patreon状态": 2,
+              "更新PAT状态": 2,
               "绑定到当前账号": 3,
-              "修改Patreon密钥": 1,
-              "清空Patreon信息": 4,
+              "修改PAT密钥": 1,
+              "清空PAT信息": 4,
             },
           );
           switch (choose) {
@@ -283,7 +283,7 @@ class _ProScreenState extends State<ProScreen> {
               break;
           }
         },
-        title: const Text("Patreon 会员"),
+        title: const Text("PAT 会员"),
         subtitle: Text.rich(TextSpan(children: [
           TextSpan(text: text),
           ...append,
@@ -294,7 +294,7 @@ class _ProScreenState extends State<ProScreen> {
         onTap: () {
           addPatAccount();
         },
-        title: const Text("Patreon 会员"),
+        title: const Text("PAT 会员"),
         subtitle: const Text("点击绑定"),
       ));
     }

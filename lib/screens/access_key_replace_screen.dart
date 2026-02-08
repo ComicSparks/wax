@@ -65,7 +65,7 @@ class _AccessKeyReplaceScreenState extends State<AccessKeyReplaceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("设置 Patreon 授权码"),
+        title: const Text("设置 PAT 授权码"),
       ),
       body: Center(
         child: _content(),

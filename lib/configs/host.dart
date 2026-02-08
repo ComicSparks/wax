@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
 
-const _defaultHost = "https://www.wnacg01.cc";
+const _defaultHost = "https://www.wn01.cfd";
 const _hostMap = {
-  "https://www.wn04.ru": "04RU",
   "https://www.wnacg05.cc": "05CC",
-  "https://www.wnacg03.cc": "03CC",
-  "https://www.wn03.ru": "03RU",
-  "https://www.wnacg02.cc": "02CC",
-  "https://www.wnacg01.cc": "01CC",
-  "https://wnacg.com": "COM",
-  "https://wnacg.ru": "RU",
+  "https://www.wn01.cfd": "01CFD",
+  "https://www.wn01.shop": "01SHOP",
+  "https://www.wn07.ru": "07RU",
 };
 
 late String host;

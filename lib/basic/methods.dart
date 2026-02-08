@@ -128,6 +128,25 @@ class Methods {
     return HttpGetResult.fromBuffer(buff).content;
   }
 
+  Future<Map<String, String>> configLinks() async {
+    final buff = await _flatInvoke("configLinks", Empty());
+    final content = HttpGetResult.fromBuffer(buff).content.trim();
+    if (content.isEmpty) {
+      return {};
+    }
+    final decoded = jsonDecode(content);
+    if (decoded is! Map) {
+      return {};
+    }
+    final Map<String, String> result = {};
+    decoded.forEach((key, value) {
+      if (key != null && value != null) {
+        result["$key"] = "$value";
+      }
+    });
+    return result;
+  }
+
   Future cleanAllCache() async {
     // todo
   }

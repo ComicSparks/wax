@@ -3,6 +3,7 @@ import 'package:wax/configs/host.dart';
 import 'package:wax/configs/themes.dart';
 import 'package:wax/configs/versions.dart';
 import 'package:wax/screens/comic_histories_screen.dart';
+import 'package:wax/screens/components/recommend_links_panel.dart';
 import 'package:wax/screens/pro_screen.dart';
 
 import '../configs/app_orientation.dart';
@@ -29,6 +30,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           const Divider(),
           const VersionInfo(),
+          const RecommendLinksPanel(),
           const Divider(),
           const LoginStateSetting(),
           hostSetting(),

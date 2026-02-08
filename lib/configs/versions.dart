@@ -249,19 +249,63 @@ class _VersionInfoState extends State<VersionInfo> {
 var _display = true;
 
 void versionPop(BuildContext context) {
-  if (latestVersion() != null && _display) {
-    _display = false;
-    TopConfirm.topConfirm(
-      context,
-      "发现新版本",
-      "发现新版本 ${latestVersion()} , 请到关于页面更新",
+  final latest = latestVersion();
+  if (latest == null || !_display) {
+    return;
+  }
+
+  final force = _isForceUpgrade(currentVersion(), latest);
+  _display = false;
+  TopConfirm.topConfirm(
+    context,
+    "发现新版本",
+    force ? "发现新版本 $latest，请立即更新后继续使用" : "发现新版本 $latest，建议更新",
+    force: force,
+    primaryText: "去下载",
+    onPrimary: _openRelease,
+  );
+}
+
+class _SemVer {
+  final int major;
+  final int minor;
+  final int patch;
+
+  const _SemVer(this.major, this.minor, this.patch);
+
+  static _SemVer? parse(String input) {
+    if (input.startsWith('v')) {
+      input = input.substring(1);
+    }
+    final regExp = RegExp(r'^(\d+)\.(\d+)\.(\d+)$');
+    final m = regExp.firstMatch(input);
+    if (m == null) return null;
+    return _SemVer(
+      int.parse(m.group(1)!),
+      int.parse(m.group(2)!),
+      int.parse(m.group(3)!),
     );
   }
+
+  @override
+  String toString() {
+    return '$major.$minor.$patch';
+  }
+}
+
+bool _isForceUpgrade(String current, String latest) {
+  final c = _SemVer.parse(current);
+  final l = _SemVer.parse(latest);
+  if (c == null || l == null) return false;
+  return l.major != c.major;
 }
 
 class TopConfirm {
   static topConfirm(BuildContext context, String title, String message,
-      {Function()? afterIKnown}) {
+      {bool force = false,
+      String primaryText = "朕知道了",
+      Future<void> Function()? onPrimary,
+      Function()? afterIKnown}) {
     late OverlayEntry overlayEntry;
     overlayEntry = OverlayEntry(builder: (BuildContext context) {
       return LayoutBuilder(
@@ -310,9 +354,15 @@ class TopConfirm {
                           elevation: 0,
                           color: Colors.black.withOpacity(.1),
                           onPressed: () {
-                            overlayEntry.remove();
+                            if (onPrimary != null) {
+                              onPrimary();
+                            }
+                            if (!force) {
+                              overlayEntry.remove();
+                            }
+                            afterIKnown?.call();
                           },
-                          child: const Text("朕知道了"),
+                          child: Text(primaryText),
                         ),
                         Container(height: 30),
                       ],
@@ -326,9 +376,7 @@ class TopConfirm {
         },
       );
     });
-    OverlayState? overlay = Overlay.of(context);
-    if (overlay != null) {
-      overlay.insert(overlayEntry);
-    }
+    final overlay = Overlay.of(context);
+    overlay.insert(overlayEntry);
   }
 }

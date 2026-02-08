@@ -6,6 +6,7 @@ import 'package:wax/configs/no_reader_anime.dart';
 import 'package:wax/configs/pager_column_number.dart';
 import 'package:wax/configs/pager_controller_mode.dart';
 import 'package:wax/configs/pager_view_mode.dart';
+import 'package:wax/configs/recommend_links.dart';
 
 import '../configs/android_display_mode.dart';
 import '../configs/android_version.dart';
@@ -52,6 +53,7 @@ class _InitScreenState extends State<InitScreen> {
     await initPagerControllerMode();
     await initPagerViewMode();
     await initHost();
+    await initRecommendLinks();
     await initVolumeController();
     await initNoReaderAnime();
     await reloadIsPro();
