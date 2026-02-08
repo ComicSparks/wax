@@ -376,7 +376,7 @@ class TopConfirm {
         },
       );
     });
-    final overlay = Overlay.of(context);
-    overlay.insert(overlayEntry);
+    final OverlayState? overlay = Overlay.of(context);
+    overlay?.insert(overlayEntry);
   }
 }
