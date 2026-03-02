@@ -271,6 +271,28 @@ class Methods {
     return result.position.toInt();
   }
 
+  Future<bool> hasViewLog($fixnum.Int64 id) async {
+    return BoolValue.fromBuffer(await _flatInvoke(
+      "hasComicViewLog",
+      ComicViewLogDto(
+        comicId: id,
+      ),
+    )).value;
+  }
+
+  Future<Map<String, bool>> hasViewLogs(List<$fixnum.Int64> ids) async {
+    final buff = await _flatInvoke(
+      "hasComicViewLogs",
+      ComicIds(ids: ids),
+    );
+    final result = ComicViewedMarks.fromBuffer(buff);
+    final map = <String, bool>{};
+    for (final item in result.items) {
+      map[item.comicId.toString()] = item.viewed;
+    }
+    return map;
+  }
+
   Future autoClearViewLog({required int time}) async {
     return _flatInvoke(
       "autoClearViewLog",

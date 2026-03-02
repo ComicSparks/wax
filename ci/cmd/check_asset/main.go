@@ -42,6 +42,8 @@ func main() {
 		releaseFileName = fmt.Sprintf("wax-%v-windows-x86_64.zip", version.Code)
 	case "linux":
 		releaseFileName = fmt.Sprintf("wax-%v-linux-x86_64.AppImage", version.Code)
+	case "android":
+		releaseFileName = fmt.Sprintf("wax-%v-android.apk", version.Code)
 	case "android-arm32":
 		releaseFileName = fmt.Sprintf("wax-%v-android-arm32.apk", version.Code)
 	case "android-arm64":

@@ -6,7 +6,6 @@ on:
 env:
   flutter_channel: 'stable'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  RUST_TOOLCHAIN: nightly-2024-12-02
 
 jobs:
 
@@ -44,27 +43,11 @@ jobs:
             host: macos-latest
             flutter_version: '2.10.5'
             go_version: '1.24'
-          - target: android-arm32
+          - target: android
             host: ubuntu-latest
             flutter_version: '3.10.5'
             go_version: '1.24'
-          - target: android-arm64
-            host: ubuntu-latest
-            flutter_version: '3.10.5'
-            go_version: '1.24'
-          - target: android-x86_64
-            host: ubuntu-latest
-            flutter_version: '3.10.5'
-            go_version: '1.24'
-          - target: android-arm32
-            host: ubuntu-latest
-            flutter_version: '2.10.5'
-            go_version: '1.24'
-          - target: android-arm64
-            host: ubuntu-latest
-            flutter_version: '2.10.5'
-            go_version: '1.24'
-          - target: android-x86_64
+          - target: android
             host: ubuntu-latest
             flutter_version: '2.10.5'
             go_version: '1.24'
@@ -86,7 +69,7 @@ jobs:
           go-version: ${{ env.go_version }}
 
       - name: Cache go modules (Linux/Android)
-        if: matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' || matrix.config.target == 'linux'
+        if: matrix.config.target == 'android' || matrix.config.target == 'linux'
         uses: actions/cache@v3
         with:
           path: |
@@ -126,14 +109,8 @@ jobs:
           flutter-version: ${{ env.flutter_version }}
           architecture: x64
 
-      - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-      
-
       - name: Install cargo tools (Android)
-        if: ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        if: matrix.config.target == 'android'
         run: |
           cargo install --force cargo-ndk
 
@@ -146,7 +123,7 @@ jobs:
           path: 'go'
 
       - name: Cache Flutter dependencies (Linux/Android)
-        if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' || matrix.config.target == 'linux' )
+        if: true && ( matrix.config.target == 'android' || matrix.config.target == 'linux' )
         uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
@@ -160,7 +137,7 @@ jobs:
           key: ${{ runner.os }}-flutter
 
       - name: Cache Gradle dependencies (Android)
-        if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        if: true && matrix.config.target == 'android'
         uses: actions/cache@v3
         with:
           path: |
@@ -171,20 +148,20 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup java (Android)
-        if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        if: true && matrix.config.target == 'android'
         uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: 'zulu'
 
-      - if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+      - if: true && matrix.config.target == 'android'
         name: Setup android tools (Android)
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: 8512546
           packages: 'platform-tools platforms;android-32 build-tools;30.0.2'
       
-      # - if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+      # - if: true && matrix.config.target == 'android'
       #   name: Install NDK
       #   run: sdkmanager "ndk;28.0.13004108"
           
@@ -212,16 +189,14 @@ jobs:
         run: |
           go install github.com/go-flutter-desktop/hover@latest
           cd go
-          go get -u github.com/ihciah/rust2go/asmcall
           go mod tidy
           cd ..
 
       - name: Install go mobile (mobile)
-        if: true && ( matrix.config.target == 'ios' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-arm32' || matrix.config.target == 'android-x86_64' )
+        if: true && ( matrix.config.target == 'ios' || matrix.config.target == 'android' )
         run: |
           go install golang.org/x/mobile/cmd/gomobile@latest
           cd go
-          go get -u github.com/ihciah/rust2go/asmcall
           go mod tidy
           gomobile init
           go get golang.org/x/mobile/bind
@@ -261,13 +236,10 @@ jobs:
       - name: Build (windows)
         if: true && matrix.config.target == 'windows'
         run: |
-          rustup target add x86_64-pc-windows-gnu
-          cargo build --manifest-path=wast/Cargo.toml --release --target x86_64-pc-windows-gnu
           hover build windows
           curl -JOL https://github.com/ComicSparks/build-tools/releases/download/storage/Resource_Hacker_5.1.8.zip
           Expand-Archive .\Resource_Hacker_5.1.8.zip
           cmd /c "Resource_Hacker_5.1.8\ResourceHacker.exe" -open go\build\outputs\windows-release\wax.exe -save go\build\outputs\windows-release\wax.exe -action addskip -res go/assets/icon.ico -mask ICONGROUP,MAINICON,0
-          cp wast/target/x86_64-pc-windows-gnu/release/wast.dll go/build/outputs/windows-release/
           cd go\build\outputs\windows-release
           DEL flutter_engine.pdb
           DEL flutter_engine.exp
@@ -277,19 +249,12 @@ jobs:
       - name: Build (macos)
         if: true && matrix.config.target == 'macos'
         run: |
-          rustup target add x86_64-apple-darwin
-          rustup target add aarch64-apple-darwin
-          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=x86_64-apple-darwin
-          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=aarch64-apple-darwin
-          lipo -create -output macos/libwast.a wast/target/x86_64-apple-darwin/release/libwast.a  wast/target/aarch64-apple-darwin/release/libwast.a
           hover build darwin-dmg
           mv go/build/outputs/darwin-dmg-release/*.dmg build/build.dmg
 
       - name: Build (linux)
         if: true && matrix.config.target == 'linux'
         run: |
-          rustup target add x86_64-unknown-linux-gnu
-          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=x86_64-unknown-linux-gnu
           curl -JOL https://github.com/junmer/source-han-serif-ttf/raw/master/SubsetTTF/CN/SourceHanSerifCN-Regular.ttf
           mkdir -p fonts
           mv SourceHanSerifCN-Regular.ttf fonts/Roboto.ttf
@@ -305,40 +270,15 @@ jobs:
       - name: Build (ios)
         if: true && matrix.config.target == 'ios'
         run: |
-          rustup target add aarch64-apple-ios
-          cargo build --manifest-path wast/Cargo.toml --features= --lib --release --target=aarch64-apple-ios
-          cp wast/target/aarch64-apple-ios/release/libwast.a ios/
           sh scripts/build-ipa.sh
 
-      - name: Build (android-arm32)
-        if: true && matrix.config.target == 'android-arm32'
+      - name: Build (android)
+        if: true && matrix.config.target == 'android'
         run: |
-          rustup target add armv7-linux-androideabi
-          cd wast
-          cargo ndk -o ../android/app/src/main/jniLibs -t armeabi-v7a build
-          cd ..
-          sh scripts/build-apk-arm.sh
-
-      - name: Build (android-arm64)
-        if: true && matrix.config.target == 'android-arm64'
-        run: |
-          rustup target add aarch64-linux-android
-          cd wast
-          cargo ndk -o ../android/app/src/main/jniLibs -t arm64-v8a build
-          cd ..
-          sh scripts/build-apk-arm64.sh
-
-      - name: Build (android-x86_64)
-        if: true && matrix.config.target == 'android-x86_64'
-        run: |
-          rustup target add x86_64-linux-android
-          cd wast
-          cargo ndk -o ../android/app/src/main/jniLibs -t x86_64 build
-          cd ..
-          sh scripts/build-apk-x64.sh
+          sh scripts/build-apk.sh
 
       - name: Sign APK (Android)
-        if: true && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+        if: true && matrix.config.target == 'android'
         env:
           KEY_FILE_BASE64: ${{ secrets.KEY_FILE_BASE64 }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -359,11 +299,11 @@ jobs:
           name: 'build-${{ env.flutter_version }}-${{ matrix.config.target }}.zip'
           path: 'build/build.zip'
           retention-days: 3
-      - if: ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
+      - if: matrix.config.target == 'android'
         name: 'Upload Artifact (Android)'
         uses: actions/upload-artifact@v4
         with:
-          name: 'app-release-${{ env.flutter_version }}-${{ matrix.config.target }}.apk'
+          name: 'app-release-${{ env.flutter_version }}-android.apk'
           path: 'build/app/outputs/flutter-apk/app-release.apk'
           retention-days: 3
       - if: matrix.config.target == 'linux'

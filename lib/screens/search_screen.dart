@@ -55,6 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: _searchBar.build(context),
       body: ComicPager(
         onPage: _fetch,
+        showViewedMark: true,
       ),
     );
   }

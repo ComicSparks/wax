@@ -9,19 +9,24 @@ import 'package:wax/protos/properties.pb.dart';
 import '../../basic/methods.dart';
 import '../../configs/reader_controller_type.dart';
 import '../../configs/reader_direction.dart';
+import '../../configs/reader_scroll_by_screen_percentage.dart';
 import '../../configs/reader_slider_position.dart';
 import '../../configs/reader_two_page_direction.dart';
 import '../../configs/reader_type.dart';
+import '../../configs/reader_zoom_scale.dart';
 import '../../configs/two_page_direction.dart';
+import '../configs/drag_region_lock.dart';
+import '../configs/gesture_speed.dart';
 import '../configs/no_reader_anime.dart';
 import '../configs/volume_controller.dart';
 import './components/content_error.dart';
 import './components/content_loading.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' as mbs;
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:zoomable_positioned_list/zoomable_positioned_list.dart' as zoomable;
 
 import 'components/images.dart';
+import '../configs/webtoon_scroll_mode.dart';
 
 class ComicReaderScreen extends StatefulWidget {
   final ComicSimple comic;
@@ -223,6 +228,18 @@ abstract class _ComicReaderState extends State<_ComicReader> {
 
   _needJumpTo(int pageIndex, bool animation);
 
+  void _needScrollForward() {
+    if (_current < widget.pagesResult.pages.length - 1) {
+      _needJumpTo(_current + 1, !noAnimation());
+    }
+  }
+
+  void _needScrollBackward() {
+    if (_current > 0) {
+      _needJumpTo(_current - 1, !noAnimation());
+    }
+  }
+
   late final bool _listVolume = volumeController;
   late bool _fullScreen;
   late int _current;
@@ -284,9 +301,17 @@ abstract class _ComicReaderState extends State<_ComicReader> {
   void _onPageControl(_ReaderControllerEventArgs? args) {
     if (args != null) {
       var event = args.key;
+      final isWebToonReader =
+          currentReaderType == ReaderType.webtoon ||
+              currentReaderType == ReaderType.webToonFreeZoom;
       final step = currentReaderType == ReaderType.twoPageGallery ? 2 : 1;
       switch (event) {
         case "UP":
+          if (isWebToonReader &&
+              currentWebToonScrollMode == WebToonScrollMode.screen) {
+            _needScrollBackward();
+            break;
+          }
           if (_current > 0) {
             var target = _current - step;
             if (target < 0) target = 0;
@@ -294,6 +319,11 @@ abstract class _ComicReaderState extends State<_ComicReader> {
           }
           break;
         case "DOWN":
+          if (isWebToonReader &&
+              currentWebToonScrollMode == WebToonScrollMode.screen) {
+            _needScrollForward();
+            break;
+          }
           if (_current < widget.pagesResult.pages.length - 1) {
             var target = _current + step;
             final max = widget.pagesResult.pages.length - 1;
@@ -839,6 +869,119 @@ class _SettingPanelState extends State<_SettingPanel> {
             },
           ),
         ],
+        if (currentReaderType == ReaderType.webtoon ||
+            currentReaderType == ReaderType.webToonFreeZoom)
+          ...[
+            ListTile(
+              title: const Text(
+                "WebToon 滚动方式",
+                style: TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                webToonScrollModeName(currentWebToonScrollMode),
+                style: const TextStyle(color: Colors.white70),
+              ),
+              onTap: () async {
+                await chooseWebToonScrollMode(context);
+                setState(() {});
+              },
+            ),
+            ListTile(
+              title: Text(
+                "按距离翻页长度 : ${currentReaderScrollByScreenPercentage}%屏幕",
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Slider(
+                min: 5,
+                max: 110,
+                divisions: 105,
+                value: currentReaderScrollByScreenPercentage.toDouble(),
+                onChanged: (double value) async {
+                  await setReaderScrollByScreenPercentage(value.toInt());
+                  setState(() {});
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "缩小倍数 : ${readerZoomMinScale.toStringAsFixed(1)}x",
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Slider(
+                min: 0.1,
+                max: 1.0,
+                divisions: 9,
+                value: readerZoomMinScale.clamp(0.1, 1.0),
+                onChanged: (double value) async {
+                  final newValue = (value * 10).roundToDouble() / 10;
+                  await setReaderZoomMinScale(newValue);
+                  setState(() {});
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "放大倍数 : ${readerZoomMaxScale.toStringAsFixed(1)}x",
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Slider(
+                min: 1.0,
+                max: 30.0,
+                divisions: 29,
+                value: readerZoomMaxScale.clamp(1.0, 30.0),
+                onChanged: (double value) async {
+                  final newValue = value.roundToDouble();
+                  await setReaderZoomMaxScale(newValue);
+                  setState(() {});
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "双击缩放倍数 : ${readerZoomDoubleTapScale.toStringAsFixed(1)}x",
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Slider(
+                min: 1.5,
+                max: 5.0,
+                divisions: 7,
+                value: readerZoomDoubleTapScale.clamp(1.5, 5.0),
+                onChanged: (double value) async {
+                  final newValue = (value * 2).roundToDouble() / 2;
+                  await setReaderZoomDoubleTapScale(newValue);
+                  setState(() {});
+                },
+              ),
+            ),
+            SwitchListTile(
+              value: dragRegionLock,
+              title: const Text(
+                "锁定拖动边界",
+                style: TextStyle(color: Colors.white),
+              ),
+              onChanged: (target) async {
+                await setDragRegionLock(target);
+                setState(() {});
+              },
+            ),
+            ListTile(
+              title: Text(
+                "手势速度倍率 : ${currentGestureSpeed.toStringAsFixed(1)}x",
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Slider(
+                min: 0.1,
+                max: 5.0,
+                divisions: 49,
+                value: currentGestureSpeed.clamp(0.1, 5.0),
+                onChanged: (double value) async {
+                  final newValue = (value * 10).roundToDouble() / 10;
+                  await setGestureSpeed(newValue);
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
       ],
     );
   }
@@ -884,32 +1027,50 @@ class _SettingPanelState extends State<_SettingPanel> {
 class _ComicReaderWebToonState extends _ComicReaderState {
   var _controllerTime = DateTime.now().millisecondsSinceEpoch + 400;
   late final List<Size?> _trueSizes = [];
-  late final ItemScrollController _itemScrollController;
-  late final ItemPositionsListener _itemPositionsListener;
+  late final zoomable.ItemScrollController _itemScrollController;
+  late final zoomable.ItemPositionsListener _itemPositionsListener;
+  late final zoomable.ScrollOffsetController _scrollOffsetController;
+  late final zoomable.ScrollOffsetListener _scrollOffsetListener;
+  StreamSubscription<double>? _scrollOffsetSubscription;
 
   @override
   void initState() {
     for (var e in widget.pagesResult.pages) {
       _trueSizes.add(null);
     }
-    _itemScrollController = ItemScrollController();
-    _itemPositionsListener = ItemPositionsListener.create();
+    _itemScrollController = zoomable.ItemScrollController();
+    _itemPositionsListener = zoomable.ItemPositionsListener.create();
     _itemPositionsListener.itemPositions.addListener(_onListCurrentChange);
+    _scrollOffsetController = zoomable.ScrollOffsetController();
+    _scrollOffsetListener = zoomable.ScrollOffsetListener.create();
+    _scrollOffsetSubscription = _scrollOffsetListener.changes.listen((_) {});
     super.initState();
   }
 
   @override
   void dispose() {
     _itemPositionsListener.itemPositions.removeListener(_onListCurrentChange);
+    _scrollOffsetSubscription?.cancel();
     super.dispose();
   }
 
   void _onListCurrentChange() {
-    var to = _itemPositionsListener.itemPositions.value.first.index;
+    final positions = _itemPositionsListener.itemPositions.value;
+    if (positions.isEmpty) {
+      return;
+    }
+    var to = positions.first.index;
     // 包含一个下一章, 假设5张图片 0,1,2,3,4 length=5, 下一章=5
     if (to >= 0 && to < widget.pagesResult.pages.length) {
       super._onCurrentChange(to);
     }
+  }
+
+  double _screenStepSize() {
+    if (widget.readerDirection == ReaderDirection.topToBottom) {
+      return MediaQuery.of(context).size.height * readerScrollByScreenPercentage;
+    }
+    return MediaQuery.of(context).size.width * readerScrollByScreenPercentage;
   }
 
   @override
@@ -928,6 +1089,24 @@ class _ComicReaderWebToonState extends _ComicReaderState {
         duration: const Duration(milliseconds: 400),
       );
     }
+  }
+
+  @override
+  void _needScrollForward() {
+    _scrollOffsetController.animateScroll(
+      offset: _screenStepSize(),
+      duration: noAnimation() ? Duration.zero : const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  void _needScrollBackward() {
+    _scrollOffsetController.animateScroll(
+      offset: -_screenStepSize(),
+      duration: noAnimation() ? Duration.zero : const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -994,7 +1173,12 @@ class _ComicReaderWebToonState extends _ComicReaderState {
             ),
           );
         }
-        return ScrollablePositionedList.builder(
+        return zoomable.ZoomablePositionedList.builder(
+          enableZoom: false,
+          gestureSpeed: currentGestureSpeed,
+          dragRegionLock: dragRegionLock,
+          scrollOffsetController: _scrollOffsetController,
+          scrollOffsetListener: _scrollOffsetListener,
           initialScrollIndex: widget.startIndex,
           scrollDirection: widget.readerDirection == ReaderDirection.topToBottom
               ? Axis.vertical
@@ -1169,30 +1353,85 @@ class _ComicReaderGalleryState extends _ComicReaderState {
 class _ListViewReaderState extends _ComicReaderState
     with SingleTickerProviderStateMixin {
   final List<Size?> _trueSizes = [];
-  final _transformationController = TransformationController();
-  late TapDownDetails _doubleTapDetails;
-  late final _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 100),
-  );
+  var _controllerTime = DateTime.now().millisecondsSinceEpoch + 400;
+  late final zoomable.ItemScrollController _itemScrollController;
+  late final zoomable.ItemPositionsListener _itemPositionsListener;
+  late final zoomable.ScrollOffsetController _scrollOffsetController;
+  late final zoomable.ScrollOffsetListener _scrollOffsetListener;
+  StreamSubscription<double>? _scrollOffsetSubscription;
 
   @override
   void initState() {
     for (var e in widget.pagesResult.pages) {
       _trueSizes.add(null);
     }
+    _itemScrollController = zoomable.ItemScrollController();
+    _itemPositionsListener = zoomable.ItemPositionsListener.create();
+    _itemPositionsListener.itemPositions.addListener(_onListCurrentChange);
+    _scrollOffsetController = zoomable.ScrollOffsetController();
+    _scrollOffsetListener = zoomable.ScrollOffsetListener.create();
+    _scrollOffsetSubscription = _scrollOffsetListener.changes.listen((_) {});
     super.initState();
   }
 
   @override
   void dispose() {
-    _transformationController.dispose();
-    _animationController.dispose();
+    _itemPositionsListener.itemPositions.removeListener(_onListCurrentChange);
+    _scrollOffsetSubscription?.cancel();
     super.dispose();
   }
 
   @override
-  void _needJumpTo(int index, bool animation) {}
+  void _needJumpTo(int index, bool animation) {
+    if (noAnimation() || animation == false) {
+      _itemScrollController.jumpTo(index: index);
+    } else {
+      if (DateTime.now().millisecondsSinceEpoch < _controllerTime) {
+        return;
+      }
+      _controllerTime = DateTime.now().millisecondsSinceEpoch + 400;
+      _itemScrollController.scrollTo(
+        index: index,
+        duration: const Duration(milliseconds: 400),
+      );
+    }
+  }
+
+  double _screenStepSize() {
+    if (currentReaderDirection == ReaderDirection.topToBottom) {
+      return MediaQuery.of(context).size.height * readerScrollByScreenPercentage;
+    }
+    return MediaQuery.of(context).size.width * readerScrollByScreenPercentage;
+  }
+
+  @override
+  void _needScrollForward() {
+    _scrollOffsetController.animateScroll(
+      offset: _screenStepSize(),
+      duration: noAnimation() ? Duration.zero : const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  void _needScrollBackward() {
+    _scrollOffsetController.animateScroll(
+      offset: -_screenStepSize(),
+      duration: noAnimation() ? Duration.zero : const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _onListCurrentChange() {
+    final positions = _itemPositionsListener.itemPositions.value;
+    if (positions.isEmpty) {
+      return;
+    }
+    final to = positions.first.index;
+    if (to >= 0 && to < widget.pagesResult.pages.length) {
+      super._onCurrentChange(to);
+    }
+  }
 
   @override
   Widget _buildViewer() {
@@ -1258,7 +1497,22 @@ class _ListViewReaderState extends _ComicReaderState
             ),
           );
         }
-        var list = ListView.builder(
+        return zoomable.ZoomablePositionedList.builder(
+          enableZoom: true,
+          gestureSpeed: currentGestureSpeed,
+          dragRegionLock: dragRegionLock,
+          minScale: readerZoomMinScale,
+          maxScale: readerZoomMaxScale,
+          doubleTapScale: readerZoomDoubleTapScale,
+          doubleTapAnimationDuration:
+            noAnimation() ? Duration.zero : const Duration(milliseconds: 200),
+          enableDoubleTapZoom:
+            currentReaderControllerType != ReaderControllerType.touchDouble &&
+              currentReaderControllerType !=
+                ReaderControllerType.touchDoubleOnceNext,
+          scrollOffsetController: _scrollOffsetController,
+          scrollOffsetListener: _scrollOffsetListener,
+          initialScrollIndex: widget.startIndex,
           scrollDirection: currentReaderDirection == ReaderDirection.topToBottom
               ? Axis.vertical
               : Axis.horizontal,
@@ -1275,6 +1529,8 @@ class _ListViewReaderState extends _ComicReaderState
             // 非全屏时, 顶部去掉顶部BAR的高度, 底部去掉底部BAR的高度, 形成看似填充的效果
             ,
           ),
+          itemScrollController: _itemScrollController,
+          itemPositionsListener: _itemPositionsListener,
           itemCount: widget.pagesResult.pages.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (widget.pagesResult.pages.length == index) {
@@ -1282,17 +1538,6 @@ class _ListViewReaderState extends _ComicReaderState
             }
             return _images[index];
           },
-        );
-        var viewer = InteractiveViewer(
-          transformationController: _transformationController,
-          minScale: 1,
-          maxScale: 2,
-          child: list,
-        );
-        return GestureDetector(
-          onDoubleTap: _handleDoubleTap,
-          onDoubleTapDown: _handleDoubleTapDown,
-          child: viewer,
         );
       },
     );
@@ -1315,28 +1560,6 @@ class _ListViewReaderState extends _ComicReaderState
     );
   }
 
-  void _handleDoubleTapDown(TapDownDetails details) {
-    _doubleTapDetails = details;
-  }
-
-  void _handleDoubleTap() {
-    if (_animationController.isAnimating) {
-      return;
-    }
-    if (_transformationController.value != Matrix4.identity()) {
-      _transformationController.value = Matrix4.identity();
-    } else {
-      var position = _doubleTapDetails.localPosition;
-      var animation = Tween(begin: 0, end: 1.0).animate(_animationController);
-      animation.addListener(() {
-        _transformationController.value = Matrix4.identity()
-          ..translate(
-              -position.dx * animation.value, -position.dy * animation.value)
-          ..scale(animation.value + 1.0);
-      });
-      _animationController.forward(from: 0);
-    }
-  }
 }
 
 class _ComicReaderTwoPageGalleryState extends _ComicReaderState {

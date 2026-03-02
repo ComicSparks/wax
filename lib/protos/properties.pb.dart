@@ -3328,6 +3328,158 @@ class ProInfoAll extends $pb.GeneratedMessage {
   ProInfoPat ensureProInfoPat() => $_ensure(1);
 }
 
+class ComicIds extends $pb.GeneratedMessage {
+  factory ComicIds({
+    $core.Iterable<$fixnum.Int64>? ids,
+  }) {
+    final $result = create();
+    if (ids != null) {
+      $result.ids.addAll(ids);
+    }
+    return $result;
+  }
+  ComicIds._() : super();
+  factory ComicIds.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ComicIds.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ComicIds', createEmptyInstance: create)
+    ..p<$fixnum.Int64>(1, _omitFieldNames ? '' : 'ids', $pb.PbFieldType.K6)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ComicIds clone() => ComicIds()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ComicIds copyWith(void Function(ComicIds) updates) => super.copyWith((message) => updates(message as ComicIds)) as ComicIds;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ComicIds create() => ComicIds._();
+  ComicIds createEmptyInstance() => create();
+  static $pb.PbList<ComicIds> createRepeated() => $pb.PbList<ComicIds>();
+  @$core.pragma('dart2js:noInline')
+  static ComicIds getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ComicIds>(create);
+  static ComicIds? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$fixnum.Int64> get ids => $_getList(0);
+}
+
+class ComicViewedMark extends $pb.GeneratedMessage {
+  factory ComicViewedMark({
+    $fixnum.Int64? comicId,
+    $core.bool? viewed,
+  }) {
+    final $result = create();
+    if (comicId != null) {
+      $result.comicId = comicId;
+    }
+    if (viewed != null) {
+      $result.viewed = viewed;
+    }
+    return $result;
+  }
+  ComicViewedMark._() : super();
+  factory ComicViewedMark.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ComicViewedMark.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ComicViewedMark', createEmptyInstance: create)
+    ..aInt64(1, _omitFieldNames ? '' : 'comicId', protoName: 'comicId')
+    ..aOB(2, _omitFieldNames ? '' : 'viewed')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ComicViewedMark clone() => ComicViewedMark()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ComicViewedMark copyWith(void Function(ComicViewedMark) updates) => super.copyWith((message) => updates(message as ComicViewedMark)) as ComicViewedMark;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ComicViewedMark create() => ComicViewedMark._();
+  ComicViewedMark createEmptyInstance() => create();
+  static $pb.PbList<ComicViewedMark> createRepeated() => $pb.PbList<ComicViewedMark>();
+  @$core.pragma('dart2js:noInline')
+  static ComicViewedMark getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ComicViewedMark>(create);
+  static ComicViewedMark? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get comicId => $_getI64(0);
+  @$pb.TagNumber(1)
+  set comicId($fixnum.Int64 v) { $_setInt64(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasComicId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearComicId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.bool get viewed => $_getBF(1);
+  @$pb.TagNumber(2)
+  set viewed($core.bool v) { $_setBool(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasViewed() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearViewed() => clearField(2);
+}
+
+class ComicViewedMarks extends $pb.GeneratedMessage {
+  factory ComicViewedMarks({
+    $core.Iterable<ComicViewedMark>? items,
+  }) {
+    final $result = create();
+    if (items != null) {
+      $result.items.addAll(items);
+    }
+    return $result;
+  }
+  ComicViewedMarks._() : super();
+  factory ComicViewedMarks.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ComicViewedMarks.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ComicViewedMarks', createEmptyInstance: create)
+    ..pc<ComicViewedMark>(1, _omitFieldNames ? '' : 'items', $pb.PbFieldType.PM, subBuilder: ComicViewedMark.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ComicViewedMarks clone() => ComicViewedMarks()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ComicViewedMarks copyWith(void Function(ComicViewedMarks) updates) => super.copyWith((message) => updates(message as ComicViewedMarks)) as ComicViewedMarks;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ComicViewedMarks create() => ComicViewedMarks._();
+  ComicViewedMarks createEmptyInstance() => create();
+  static $pb.PbList<ComicViewedMarks> createRepeated() => $pb.PbList<ComicViewedMarks>();
+  @$core.pragma('dart2js:noInline')
+  static ComicViewedMarks getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ComicViewedMarks>(create);
+  static ComicViewedMarks? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<ComicViewedMark> get items => $_getList(0);
+}
+
 class ProInfoAf extends $pb.GeneratedMessage {
   factory ProInfoAf({
     $core.bool? isPro,

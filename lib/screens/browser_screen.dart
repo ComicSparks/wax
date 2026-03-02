@@ -155,6 +155,7 @@ class _BrowserScreenState extends State<BrowserScreen>
       body: ComicPager(
         key: Key("$host:$_tag:$_cate"),
         onPage: _onPage,
+        showViewedMark: true,
       ),
     );
   }

@@ -541,7 +541,7 @@ class ContentBodyState extends State<ContentBody> {
 
 //  计算点击
   btnclick(e) {
-    if (sums == "5686648") {
+    if (sums == "882299") {
       methods.saveProperty(k: "ignoreLogin", v: "true").then((value) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (BuildContext context) {

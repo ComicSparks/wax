@@ -24,6 +24,8 @@ class ComicList extends StatefulWidget {
   final bool inScroll;
   final List<ComicSimple> data;
   final List<ComicSimple>? selected;
+  final bool showViewedMark;
+  final Map<String, bool> viewedMap;
   final Widget? append;
   final ScrollController? controller;
   final Function? onScroll;
@@ -33,6 +35,8 @@ class ComicList extends StatefulWidget {
     Key? key,
     required this.data,
     this.selected,
+    this.showViewedMark = false,
+    this.viewedMap = const {},
     this.append,
     this.controller,
     this.inScroll = false,
@@ -61,6 +65,33 @@ class _ComicListState extends State<ComicList> {
 
   _setState(_) {
     setState(() {});
+  }
+
+  List<Widget> _viewedBadge(ComicSimple comic) {
+    if (!widget.showViewedMark || widget.selected != null) {
+      return [];
+    }
+    if (widget.viewedMap[comic.id.toString()] != true) {
+      return [];
+    }
+    return [
+      Positioned(
+        top: 6,
+        right: 6,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            shape: BoxShape.circle,
+          ),
+          padding: const EdgeInsets.all(4),
+          child: const Icon(
+            Icons.visibility,
+            color: Colors.white,
+            size: 14,
+          ),
+        ),
+      ),
+    ];
   }
 
   @override
@@ -111,6 +142,7 @@ class _ComicListState extends State<ComicList> {
         onTap: callback,
         child: Stack(children: [
           card,
+          ..._viewedBadge(widget.data[i]),
           ...widget.selected == null
               ? []
               : [
@@ -187,6 +219,7 @@ class _ComicListState extends State<ComicList> {
         onTap: callback,
         child: Stack(children: [
           ComicInfoCard(widget.data[i]),
+          ..._viewedBadge(widget.data[i]),
           ...widget.selected == null
               ? []
               : [
@@ -284,6 +317,7 @@ class _ComicListState extends State<ComicList> {
               },
             ),
           ),
+            ..._viewedBadge(widget.data[i]),
           ...widget.selected == null
               ? []
               : [
@@ -401,6 +435,7 @@ class _ComicListState extends State<ComicList> {
               ),
             ],
           ),
+            ..._viewedBadge(widget.data[i]),
           ...widget.selected == null
               ? []
               : [

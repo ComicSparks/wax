@@ -698,6 +698,45 @@ final $typed_data.Uint8List proInfoAllDescriptor = $convert.base64Decode(
     'CgpQcm9JbmZvQWxsEigKCXByb0luZm9BZhgBIAEoCzIKLlByb0luZm9BZlIJcHJvSW5mb0FmEi'
     'sKCnByb0luZm9QYXQYAiABKAsyCy5Qcm9JbmZvUGF0Ugpwcm9JbmZvUGF0');
 
+@$core.Deprecated('Use comicIdsDescriptor instead')
+const ComicIds$json = {
+  '1': 'ComicIds',
+  '2': [
+    {'1': 'ids', '3': 1, '4': 3, '5': 3, '10': 'ids'},
+  ],
+};
+
+/// Descriptor for `ComicIds`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicIdsDescriptor = $convert.base64Decode(
+    'CghDb21pY0lkcxIQCgNpZHMYASADKANSA2lkcw==');
+
+@$core.Deprecated('Use comicViewedMarkDescriptor instead')
+const ComicViewedMark$json = {
+  '1': 'ComicViewedMark',
+  '2': [
+    {'1': 'comicId', '3': 1, '4': 1, '5': 3, '10': 'comicId'},
+    {'1': 'viewed', '3': 2, '4': 1, '5': 8, '10': 'viewed'},
+  ],
+};
+
+/// Descriptor for `ComicViewedMark`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicViewedMarkDescriptor = $convert.base64Decode(
+    'Cg9Db21pY1ZpZXdlZE1hcmsSGAoHY29taWNJZBgBIAEoA1IHY29taWNJZBIWCgZ2aWV3ZWQYAi'
+    'ABKAhSBnZpZXdlZA==');
+
+@$core.Deprecated('Use comicViewedMarksDescriptor instead')
+const ComicViewedMarks$json = {
+  '1': 'ComicViewedMarks',
+  '2': [
+    {'1': 'items', '3': 1, '4': 3, '5': 11, '6': '.ComicViewedMark', '10': 'items'},
+  ],
+};
+
+/// Descriptor for `ComicViewedMarks`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicViewedMarksDescriptor = $convert.base64Decode(
+    'ChBDb21pY1ZpZXdlZE1hcmtzEiYKBWl0ZW1zGAEgAygLMhAuQ29taWNWaWV3ZWRNYXJrUgVpdG'
+    'Vtcw==');
+
 @$core.Deprecated('Use proInfoAfDescriptor instead')
 const ProInfoAf$json = {
   '1': 'ProInfoAf',

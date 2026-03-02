@@ -341,14 +341,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  scrollable_positioned_list:
-    dependency: "direct main"
-    description:
-      name: scrollable_positioned_list
-      sha256: "9566352ab9ba05794ee6c8864f154afba5d36c5637d0e3e32c615ba4ceb92772"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -498,6 +490,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.2"
+  zoomable_positioned_list:
+    dependency: "direct main"
+    description:
+      name: zoomable_positioned_list
+      sha256: e45aa7a6ff3b16b1fdf1a262d7b3468430ed7048e40eb173522ce60cc60b6812
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
 sdks:
   dart: ">=3.0.0-0 <4.0.0"
   flutter: ">=3.7.0"

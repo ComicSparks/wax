@@ -15,7 +15,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		DD2B174E283794B400588822 /* Mobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD2B174D283794B400588822 /* Mobile.xcframework */; };
-		DD6BF1CC2E3CCECF00AD6BE1 /* libwast.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6BF1CB2E3CCECF00AD6BE1 /* libwast.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,7 +59,6 @@
 			files = (
 				DD2B174E283794B400588822 /* Mobile.xcframework in Frameworks */,
 				22E7A0027957F43C3A1D4E0B /* Pods_Runner.framework in Frameworks */,
-				DD6BF1CC2E3CCECF00AD6BE1 /* libwast.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,9 +227,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

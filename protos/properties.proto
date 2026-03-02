@@ -263,6 +263,19 @@ message ProInfoAll {
   ProInfoPat proInfoPat = 2;
 }
 
+message ComicIds {
+  repeated int64 ids = 1;
+}
+
+message ComicViewedMark {
+  int64 comicId = 1;
+  bool viewed = 2;
+}
+
+message ComicViewedMarks {
+  repeated ComicViewedMark items = 1;
+}
+
 message ProInfoAf {
   bool isPro = 1;
   int64 expire = 2;

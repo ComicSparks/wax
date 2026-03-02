@@ -9,15 +9,21 @@ import 'package:wax/protos/properties.pb.dart';
 
 import '../../configs/is_pro.dart';
 import '../../configs/pager_controller_mode.dart';
+import '../../configs/show_viewed_mark.dart';
 import 'comic_list.dart';
 import 'content_builder.dart';
 
 class ComicPager extends StatefulWidget {
   final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
+  final bool showViewedMark;
 
   const ComicPager(
-      {required this.onPage, this.menus = defaultPagerMenus, Key? key})
+      {
+      required this.onPage,
+      this.menus = defaultPagerMenus,
+      this.showViewedMark = false,
+      Key? key})
       : super(key: key);
 
   @override
@@ -45,9 +51,17 @@ class _ComicPagerState extends State<ComicPager> {
   Widget build(BuildContext context) {
     switch (currentPagerControllerMode) {
       case PagerControllerMode.stream:
-        return _StreamPager(onPage: widget.onPage, menus: widget.menus);
+        return _StreamPager(
+          onPage: widget.onPage,
+          menus: widget.menus,
+          showViewedMark: widget.showViewedMark,
+        );
       case PagerControllerMode.pager:
-        return _PagerPager(onPage: widget.onPage, menus: widget.menus);
+        return _PagerPager(
+          onPage: widget.onPage,
+          menus: widget.menus,
+          showViewedMark: widget.showViewedMark,
+        );
     }
   }
 }
@@ -55,8 +69,14 @@ class _ComicPagerState extends State<ComicPager> {
 class _StreamPager extends StatefulWidget {
   final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
+  final bool showViewedMark;
 
-  const _StreamPager({Key? key, required this.onPage, required this.menus})
+  const _StreamPager({
+    Key? key,
+    required this.onPage,
+    required this.menus,
+    required this.showViewedMark,
+  })
       : super(key: key);
 
   @override
@@ -78,6 +98,7 @@ class _StreamPagerState extends State<_StreamPager> {
         _joining = true;
       });
       var response = await widget.onPage(_nextPage);
+      await _loadViewedMarksFor(response.comics);
       _nextPage++;
       _data.addAll(response.comics);
       _maxPage = response.maxPage.toInt();
@@ -95,9 +116,34 @@ class _StreamPagerState extends State<_StreamPager> {
   }
 
   final List<ComicSimple> _data = [];
+  final Map<String, bool> _viewedMap = {};
   List<ComicSimple>? _selected = null;
   late ScrollController _controller;
   var _key = UniqueKey();
+
+  bool get _enableViewedMark => widget.showViewedMark && showViewedMark;
+
+  Future<void> _loadViewedMarksFor(List<ComicSimple> comics) async {
+    if (!_enableViewedMark) {
+      return;
+    }
+    final ids = comics
+        .map((e) => e.id)
+        .where((id) => !_viewedMap.containsKey(id.toString()))
+        .toList();
+    if (ids.isEmpty) {
+      return;
+    }
+    try {
+      final values = await methods.hasViewLogs(ids);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _viewedMap.addAll(values);
+      });
+    } catch (_) {}
+  }
 
   @override
   void initState() {
@@ -141,6 +187,7 @@ class _StreamPagerState extends State<_StreamPager> {
     _nextPage = num;
     _joining = false;
     _joinSuccess = true;
+    _viewedMap.clear();
     _key = UniqueKey();
     setState(() {});
     _join();
@@ -213,6 +260,8 @@ class _StreamPagerState extends State<_StreamPager> {
             onScroll: _onScroll,
             data: _data,
             selected: _selected,
+            showViewedMark: _enableViewedMark,
+            viewedMap: _viewedMap,
             append: _buildLoadingCard(),
             menus: widget.menus,
           ),
@@ -296,8 +345,14 @@ class _StreamPagerState extends State<_StreamPager> {
 class _PagerPager extends StatefulWidget {
   final List<PagerMenu> menus;
   final Future<FetchComicResult> Function(int page) onPage;
+  final bool showViewedMark;
 
-  const _PagerPager({Key? key, required this.onPage, required this.menus})
+  const _PagerPager({
+    Key? key,
+    required this.onPage,
+    required this.menus,
+    required this.showViewedMark,
+  })
       : super(key: key);
 
   @override
@@ -310,12 +365,37 @@ class _PagerPagerState extends State<_PagerPager> {
   late int _currentPage = 1;
   late int _maxPage = 1;
   late final List<ComicSimple> _data = [];
+  final Map<String, bool> _viewedMap = {};
   late Future _pageFuture = _load();
   List<ComicSimple>? _selected;
+
+  bool get _enableViewedMark => widget.showViewedMark && showViewedMark;
+
+  Future<void> _loadViewedMarksFor(List<ComicSimple> comics) async {
+    if (!_enableViewedMark) {
+      return;
+    }
+    final ids = comics.map((e) => e.id).toList();
+    if (ids.isEmpty) {
+      return;
+    }
+    try {
+      final values = await methods.hasViewLogs(ids);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _viewedMap
+          ..clear()
+          ..addAll(values);
+      });
+    } catch (_) {}
+  }
 
   Future<dynamic> _load() async {
     _selected = null;
     var response = await widget.onPage(_currentPage);
+    await _loadViewedMarksFor(response.comics);
     setState(() {
       _data.clear();
       _data.addAll(response.comics);
@@ -349,6 +429,8 @@ class _PagerPagerState extends State<_PagerPager> {
           body: ComicList(
             data: _data,
             selected: _selected,
+            showViewedMark: _enableViewedMark,
+            viewedMap: _viewedMap,
             menus: widget.menus,
           ),
         );

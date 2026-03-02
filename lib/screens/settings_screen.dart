@@ -11,6 +11,7 @@ import '../configs/auto_clean.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
 import '../configs/no_reader_anime.dart';
+import '../configs/show_viewed_mark.dart';
 import '../configs/view_log_clean.dart';
 import '../configs/volume_controller.dart';
 
@@ -51,6 +52,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           noReaderAnimeSetting(),
           volumeControllerSetting(),
+          showViewedMarkSetting(),
           appOrientationWidget(),
           const Divider(),
           viewLogCleanSetting(),
