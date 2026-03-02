@@ -30,6 +30,7 @@ class ComicList extends StatefulWidget {
   final ScrollController? controller;
   final Function? onScroll;
   final List<PagerMenu> menus;
+  final Future<void> Function(ComicSimple comic)? onComicInfoClosed;
 
   const ComicList({
     Key? key,
@@ -42,6 +43,7 @@ class ComicList extends StatefulWidget {
     this.inScroll = false,
     this.onScroll,
     this.menus = defaultPagerMenus,
+    this.onComicInfoClosed,
   }) : super(key: key);
 
   @override
@@ -482,10 +484,12 @@ class _ComicListState extends State<ComicList> {
     );
   }
 
-  void _pushToComicInfo(ComicSimple data) {
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+  Future<void> _pushToComicInfo(ComicSimple data) async {
+    await Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) {
       return ComicInfoScreen(data);
     }));
+    await widget.onComicInfoClosed?.call(data);
   }
 
   GestureLongPressCallback? _buildDeleteDialog(ComicSimple cb) {

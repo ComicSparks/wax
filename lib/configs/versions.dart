@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'dart:async' show Future;
-import 'dart:convert';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -9,21 +8,21 @@ import 'package:wax/basic/methods.dart';
 import '../basic/commons.dart';
 import '../screens/components/badge.dart';
 
-const repoOwnerUrl = "https://api.github.com/repos/ComicSparks/glxx/releases/tags/wax";
-const _releasesUrl = "https://github.com/OWNER/wax/releases";
-const _versionUrl = "https://api.github.com/repos/OWNER/wax/releases/latest";
 const _versionAssets = 'lib/assets/version.txt';
 RegExp _versionExp = RegExp(r"^v\d+\.\d+.\d+$");
 
 Future _openRelease() async {
-  var owner = jsonDecode(await methods.httpGet(url: repoOwnerUrl))["body"].toString().trim();
-    print("owner: $owner");
-  openUrl(_releasesUrl.replaceAll("OWNER", owner));
+  final url = _downloadUrl;
+  if (url == null || url.isEmpty) {
+    return;
+  }
+  openUrl(url);
 }
 
 late String _version;
 String? _latestVersion;
 String? _latestVersionInfo;
+String? _downloadUrl;
 
 Future initVersion() async {
   // 当前版本
@@ -52,16 +51,6 @@ Future autoCheckNewVersion() {
   return _versionCheck();
 }
 
-Future manualCheckNewVersion(BuildContext context) async {
-  try {
-    defaultToast(context, "检查新版本");
-    await _versionCheck();
-    defaultToast(context, "成功");
-  } catch (e) {
-    defaultToast(context, "失败" " : $e");
-  }
-}
-
 bool dirtyVersion() {
   return !_versionExp.hasMatch(_version);
 }
@@ -69,15 +58,19 @@ bool dirtyVersion() {
 // maybe exception
 Future _versionCheck() async {
   if (_versionExp.hasMatch(_version)) {
-    var owner = jsonDecode(await methods.httpGet(url: repoOwnerUrl))["body"].toString().trim();
-    print("owner: $owner");
-    var json = jsonDecode(await methods.httpGet(url: _versionUrl.replaceAll("OWNER", owner)));
-    if (json["name"] != null) {
-      String latestVersion = (json["name"]);
-      if (latestVersion != _version) {
-        _latestVersion = latestVersion;
-        _latestVersionInfo = json["body"] ?? "";
-      }
+    final config = await methods.fetchWaxConfig();
+    final latestVersion = (config["latestVersion"] ?? "").toString().trim();
+    final changeLog = (config["changeLog"] ?? "").toString();
+    final downloadUrl = (config["downloadUrl"] ?? "").toString().trim();
+    _downloadUrl = downloadUrl.isEmpty ? null : downloadUrl;
+
+    final compare = _compareSemVer(latestVersion, _version);
+    if (compare > 0) {
+      _latestVersion = latestVersion;
+      _latestVersionInfo = changeLog;
+    } else {
+      _latestVersion = null;
+      _latestVersionInfo = null;
     }
   } // else dirtyVersion
   versionEvent.broadcast();
@@ -166,42 +159,16 @@ class _VersionInfoState extends State<VersionInfo> {
       TextSpan(
         children: [
           const TextSpan(text: "未检测到新版本", style: TextStyle(height: 1.3)),
-          WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              margin: const EdgeInsets.only(left: 3, right: 3),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-            ),
-          ),
-          TextSpan(
-            text: "检查更新",
-            style: TextStyle(
-              height: 1.3,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () => manualCheckNewVersion(context),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildDirty() {
-    return VersionBadged(
-      child: Text.rich(
-        TextSpan(
-          text: "下载RELEASE版     ",
-          style: TextStyle(
-            height: 1.3,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = _openRelease,
-        ),
+    return const VersionBadged(
+      child: Text(
+        "开发版本",
+        style: TextStyle(height: 1.3),
       ),
     );
   }
@@ -227,20 +194,7 @@ class _VersionInfoState extends State<VersionInfo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Divider(),
-        Container(
-          padding: const EdgeInsets.all(15),
-          child: Text.rich(
-            TextSpan(
-              text: "去RELEASE仓库",
-              style: TextStyle(
-                height: 1.3,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = _openRelease,
-            ),
-          ),
-        ),
+        Container(padding: const EdgeInsets.all(15)),
       ],
     );
   }
@@ -297,7 +251,22 @@ bool _isForceUpgrade(String current, String latest) {
   final c = _SemVer.parse(current);
   final l = _SemVer.parse(latest);
   if (c == null || l == null) return false;
-  return l.major != c.major;
+  return l.minor > c.minor;
+}
+
+int _compareSemVer(String a, String b) {
+  final va = _SemVer.parse(a);
+  final vb = _SemVer.parse(b);
+  if (va == null || vb == null) {
+    return 0;
+  }
+  if (va.major != vb.major) {
+    return va.major.compareTo(vb.major);
+  }
+  if (va.minor != vb.minor) {
+    return va.minor.compareTo(vb.minor);
+  }
+  return va.patch.compareTo(vb.patch);
 }
 
 class TopConfirm {

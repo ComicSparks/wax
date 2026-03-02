@@ -15,6 +15,7 @@ import '../../configs/reader_two_page_direction.dart';
 import '../../configs/reader_type.dart';
 import '../../configs/reader_zoom_scale.dart';
 import '../../configs/two_page_direction.dart';
+import '../configs/full_screen_page_number.dart';
 import '../configs/drag_region_lock.dart';
 import '../configs/gesture_speed.dart';
 import '../configs/no_reader_anime.dart';
@@ -337,6 +338,15 @@ abstract class _ComicReaderState extends State<_ComicReader> {
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _buildControllerBody(),
+        IgnorePointer(child: _buildFullScreenPageFloating()),
+      ],
+    );
+  }
+
+  Widget _buildControllerBody() {
     switch (currentReaderControllerType) {
       // 按钮
       case ReaderControllerType.controller:
@@ -375,6 +385,55 @@ abstract class _ComicReaderState extends State<_ComicReader> {
           ],
         );
     }
+  }
+
+  Widget _buildFullScreenPageFloating() {
+    if (!_fullScreen || !fullScreenShowPageNumber) {
+      return Container();
+    }
+
+    Alignment alignment;
+    EdgeInsets margin;
+    switch (fullScreenPageNumberPosition) {
+      case FullScreenPageNumberPosition.topLeft:
+        alignment = Alignment.topLeft;
+        margin = const EdgeInsets.only(top: 14, left: 10);
+        break;
+      case FullScreenPageNumberPosition.bottomLeft:
+        alignment = Alignment.bottomLeft;
+        margin = const EdgeInsets.only(bottom: 14, left: 10);
+        break;
+      case FullScreenPageNumberPosition.topRight:
+        alignment = Alignment.topRight;
+        margin = const EdgeInsets.only(top: 14, right: 10);
+        break;
+      case FullScreenPageNumberPosition.bottomRight:
+        alignment = Alignment.bottomRight;
+        margin = const EdgeInsets.only(bottom: 14, right: 10);
+        break;
+    }
+
+    return SafeArea(
+      child: Align(
+        alignment: alignment,
+        child: Container(
+          margin: margin,
+          padding: const EdgeInsets.only(left: 6, right: 6, top: 2, bottom: 2),
+          decoration: BoxDecoration(
+            color: const Color(0x66000000),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            "${_current + 1} / ${widget.pagesResult.pages.length}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              height: 1.1,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildFullScreenControllerStackItem() {

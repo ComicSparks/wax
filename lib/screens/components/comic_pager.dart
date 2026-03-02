@@ -145,6 +145,21 @@ class _StreamPagerState extends State<_StreamPager> {
     } catch (_) {}
   }
 
+  Future<void> _refreshViewedMarkFor(ComicSimple comic) async {
+    if (!_enableViewedMark) {
+      return;
+    }
+    try {
+      final viewed = await methods.hasViewLog(comic.id);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _viewedMap[comic.id.toString()] = viewed;
+      });
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     _controller = ScrollController();
@@ -264,6 +279,7 @@ class _StreamPagerState extends State<_StreamPager> {
             viewedMap: _viewedMap,
             append: _buildLoadingCard(),
             menus: widget.menus,
+            onComicInfoClosed: _refreshViewedMarkFor,
           ),
         ),
       ],
@@ -392,6 +408,21 @@ class _PagerPagerState extends State<_PagerPager> {
     } catch (_) {}
   }
 
+  Future<void> _refreshViewedMarkFor(ComicSimple comic) async {
+    if (!_enableViewedMark) {
+      return;
+    }
+    try {
+      final viewed = await methods.hasViewLog(comic.id);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _viewedMap[comic.id.toString()] = viewed;
+      });
+    } catch (_) {}
+  }
+
   Future<dynamic> _load() async {
     _selected = null;
     var response = await widget.onPage(_currentPage);
@@ -432,6 +463,7 @@ class _PagerPagerState extends State<_PagerPager> {
             showViewedMark: _enableViewedMark,
             viewedMap: _viewedMap,
             menus: widget.menus,
+            onComicInfoClosed: _refreshViewedMarkFor,
           ),
         );
       },

@@ -12,6 +12,8 @@ import 'package:wax/protos/properties.pb.dart';
 
 final methods = Methods._();
 
+const _waxConfigUrl = "https://cdn.comicsparks.work/cfg/wax";
+
 class Methods {
   Methods._();
 
@@ -129,8 +131,22 @@ class Methods {
   }
 
   Future<Map<String, String>> configLinks() async {
-    final buff = await _flatInvoke("configLinks", Empty());
-    final content = HttpGetResult.fromBuffer(buff).content.trim();
+    final config = await fetchWaxConfig();
+    final links = config["links"];
+    if (links is! Map) {
+      return {};
+    }
+    final Map<String, String> result = {};
+    links.forEach((key, value) {
+      if (key != null && value != null) {
+        result["$key"] = "$value";
+      }
+    });
+    return result;
+  }
+
+  Future<Map<String, dynamic>> fetchWaxConfig() async {
+    final content = (await httpGet(url: _waxConfigUrl)).trim();
     if (content.isEmpty) {
       return {};
     }
@@ -138,13 +154,7 @@ class Methods {
     if (decoded is! Map) {
       return {};
     }
-    final Map<String, String> result = {};
-    decoded.forEach((key, value) {
-      if (key != null && value != null) {
-        result["$key"] = "$value";
-      }
-    });
-    return result;
+    return Map<String, dynamic>.from(decoded);
   }
 
   Future cleanAllCache() async {

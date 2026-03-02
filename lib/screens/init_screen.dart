@@ -13,6 +13,7 @@ import '../configs/android_version.dart';
 import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
 import '../configs/download_thread_count.dart';
+import '../configs/full_screen_page_number.dart';
 import '../configs/drag_region_lock.dart';
 import '../configs/gesture_speed.dart';
 import '../configs/login_state.dart';
@@ -56,6 +57,7 @@ class _InitScreenState extends State<InitScreen> {
     await initReaderZoomScale();
     await initDragRegionLock();
     await initGestureSpeed();
+    await initFullScreenPageNumber();
     await initShowViewedMark();
     await initTwoPageDirection();
     await initReaderTwoPageDirection();

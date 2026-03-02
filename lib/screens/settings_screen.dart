@@ -8,6 +8,7 @@ import 'package:wax/screens/pro_screen.dart';
 
 import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
+import '../configs/full_screen_page_number.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
 import '../configs/no_reader_anime.dart';
@@ -52,6 +53,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           noReaderAnimeSetting(),
           volumeControllerSetting(),
+          fullScreenPageNumberSetting(),
           showViewedMarkSetting(),
           appOrientationWidget(),
           const Divider(),
