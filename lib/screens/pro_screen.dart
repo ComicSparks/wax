@@ -117,7 +117,7 @@ class _ProScreenState extends State<ProScreen> {
               "点击\"我曾经发过电\"进同步发电状态\n"
               "点击\"我刚才发了电\"兑换神秘代码\n"
               "去\"关于\"界面找到维护地址用爱发电\n"
-              "\"FAIL\"请尝试更换您的网络或发电方式",
+              "\"FAIL\"请尝试更换您的网络",
             ),
           ),
           const Divider(),
@@ -195,8 +195,6 @@ class _ProScreenState extends State<ProScreen> {
               setState(() {});
             },
           ),
-          const Divider(),
-          const ProServerNameWidget(),
           const Divider(),
           ...patPro(),
           const Divider(),
@@ -344,64 +342,5 @@ class _ProScreenState extends State<ProScreen> {
     await reloadIsPro();
     defaultToast(context, "Success");
     setState(() {});
-  }
-}
-
-class ProServerNameWidget extends StatefulWidget {
-  const ProServerNameWidget({Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _ProServerNameWidgetState();
-}
-
-class _ProServerNameWidgetState extends State<ProServerNameWidget> {
-  String _serverName = "";
-
-  @override
-  void initState() {
-    methods.getProServerName().then((value) {
-      setState(() {
-        _serverName = value;
-      });
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: const Text("发电方式"),
-      subtitle: Text(_loadServerName()),
-      onTap: () async {
-        final serverName = await chooseMapDialog(
-          context,
-          title: "选择发电方式",
-          values: {
-            "核能发电": "JP",
-            "风力发电": "HK",
-            "水力发电": "US",
-          },
-        );
-        if (serverName != null && serverName.isNotEmpty) {
-          await methods.setProServerName(serverName);
-          setState(() {
-            _serverName = serverName;
-          });
-        }
-      },
-    );
-  }
-
-  String _loadServerName() {
-    switch (_serverName) {
-      case "JP":
-        return "核能发电";
-      case "HK":
-        return "风力发电";
-      case "US":
-        return "水力发电";
-      default:
-        return "";
-    }
   }
 }
