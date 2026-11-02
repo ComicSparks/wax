@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 
 import '../../basic/commons.dart';
 import 'images.dart';

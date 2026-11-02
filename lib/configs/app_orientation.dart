@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:wax/basic/methods.dart';
 
 import '../basic/commons.dart';
-import '../protos/properties.pb.dart';
 
 const _propertyName = "appOrientation";
 late AppOrientation _appOrientation;

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../basic/commons.dart';
 import '../basic/methods.dart';
 
-final _pink = ThemeData.light().copyWith(
+final _pink = ThemeData.light(useMaterial3: false).copyWith(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
     secondary: Colors.pink.shade200,
@@ -17,7 +17,11 @@ final _pink = ThemeData.light().copyWith(
   appBarTheme: AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle.light,
     color: Colors.pink.shade200,
+    foregroundColor: Colors.white,
     iconTheme: const IconThemeData(
+      color: Colors.white,
+    ),
+    actionsIconTheme: const IconThemeData(
       color: Colors.white,
     ),
   ),
@@ -39,7 +43,7 @@ final _pink = ThemeData.light().copyWith(
   ),
 );
 
-final _dark = ThemeData.dark().copyWith(
+final _dark = ThemeData.dark(useMaterial3: false).copyWith(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.light(
     secondary: Colors.pink.shade200,

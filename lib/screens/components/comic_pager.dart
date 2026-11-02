@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 
 import '../../configs/is_pro.dart';
 import '../../configs/pager_controller_mode.dart';
@@ -101,7 +101,7 @@ class _StreamPagerState extends State<_StreamPager> {
       await _loadViewedMarksFor(response.comics);
       _nextPage++;
       _data.addAll(response.comics);
-      _maxPage = response.maxPage.toInt();
+      _maxPage = response.maxPage;
       setState(() {
         _joinSuccess = true;
         _joining = false;
@@ -430,7 +430,7 @@ class _PagerPagerState extends State<_PagerPager> {
     setState(() {
       _data.clear();
       _data.addAll(response.comics);
-      _maxPage = response.maxPage.toInt();
+      _maxPage = response.maxPage;
     });
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
 
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/actions.dart';
 import 'components/browser_bottom_sheet.dart';
 import 'components/comic_pager.dart';
@@ -30,7 +30,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
       return "全部";
     }
     for (final p in _partitions) {
-      if (p.id.toInt() == _partitionId) {
+      if (p.id == _partitionId) {
         return p.name;
       }
     }
@@ -44,7 +44,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         ..clear()
         ..addAll(res.partitionList);
       if (_partitionId != 0 &&
-          !_partitions.any((e) => e.id.toInt() == _partitionId)) {
+          !_partitions.any((e) => e.id == _partitionId)) {
         _partitionId = 0;
         _pagerKey = UniqueKey();
       }
@@ -61,7 +61,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
     }
     final items = <Entity<int>>[
       Entity("全部", 0),
-      ..._partitions.map((e) => Entity(e.name, e.id.toInt())),
+      ..._partitions.map((e) => Entity(e.name, e.id)),
     ];
     final chosen = await chooseEntity<int>(
       context,
@@ -213,7 +213,7 @@ class _FavoritesPartitionManageSheetState
       return;
     }
     try {
-      await methods.renameFavoritesPartition(dto.id.toInt(), name.trim());
+      await methods.renameFavoritesPartition(dto.id, name.trim());
       await _load();
       defaultToast(context, "修改成功");
     } catch (e) {
@@ -263,8 +263,8 @@ class _FavoritesPartitionManageSheetState
                         leading: Icon(Icons.folder),
                         title: Text(p.name),
                         subtitle: Text("ID: ${p.id}"),
-                        selected: widget.currentPartitionId == p.id.toInt(),
-                        onTap: () => Navigator.of(context).pop(p.id.toInt()),
+                        selected: widget.currentPartitionId == p.id,
+                        onTap: () => Navigator.of(context).pop(p.id),
                         trailing: PopupMenuButton<String>(
                           icon: Icon(Icons.more_vert),
                           onSelected: (value) async {
@@ -283,11 +283,11 @@ class _FavoritesPartitionManageSheetState
                               }
                               try {
                                 await methods.deleteFavoritesPartition(
-                                  p.id.toInt(),
+                                  p.id,
                                 );
                                 defaultToast(context, "删除成功");
                                 if (widget.currentPartitionId ==
-                                    p.id.toInt()) {
+                                    p.id) {
                                   Navigator.of(context).pop(0);
                                   return;
                                 }

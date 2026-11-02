@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
 import 'package:wax/basic/methods.dart';
 import 'package:wax/configs/host.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'package:wax/screens/comic_histories_screen.dart';
 import 'package:wax/screens/downloads_screen.dart';
 import 'package:wax/screens/favourite_screen.dart';
@@ -110,7 +110,7 @@ class _BrowserScreenState extends State<BrowserScreen>
               }
             },
             itemBuilder: (context) {
-              final textColor = Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.onSurface;
+              final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Theme.of(context).colorScheme.onSurface;
               return [
                 PopupMenuItem(value: 'history', child: Row(children: [
                    Text(" "),

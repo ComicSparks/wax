@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:another_xlider/another_xlider.dart';
+import 'package:another_xlider/models/slider_step.dart';
+import 'package:another_xlider/models/tooltip/tooltip.dart';
+import 'package:another_xlider/models/trackbar.dart';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import '../../basic/methods.dart';
 import '../../configs/reader_controller_type.dart';
 import '../../configs/reader_direction.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../basic/methods.dart';
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/comic_pager.dart';
 
 class RankScreen extends StatefulWidget {
@@ -31,8 +31,8 @@ class _RankScreenState extends State<RankScreen> with TickerProviderStateMixin {
       body: Column(children: [
         TabBar(
           controller: _tabController,
-          labelColor: Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.onSurface,
-          unselectedLabelColor: Theme.of(context).textTheme.bodyText2?.color ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          labelColor: Theme.of(context).textTheme.bodyLarge?.color ?? Theme.of(context).colorScheme.onSurface,
+          unselectedLabelColor: Theme.of(context).textTheme.bodyMedium?.color ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           tabs: const [
             Tab(text: '日榜'),
             Tab(text: '周榜'),

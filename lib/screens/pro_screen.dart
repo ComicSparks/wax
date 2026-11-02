@@ -138,7 +138,7 @@ class _ProScreenState extends State<ProScreen> {
                   title: const Text("兑换发电"),
                   subtitle: Text(
                     proInfoAf.isPro
-                        ? "发电中 (${DateTime.fromMillisecondsSinceEpoch(1000 * proInfoAf.expire.toInt()).toString()})"
+                        ? "发电中 (${DateTime.fromMillisecondsSinceEpoch(1000 * proInfoAf.expire).toString()})"
                         : "未发电",
                   ),
                 ),
@@ -217,7 +217,7 @@ class _ProScreenState extends State<ProScreen> {
       }
       if (proInfoPat.requestDelete > 0) {
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-          proInfoPat.requestDelete.toInt() * 1000,
+          proInfoPat.requestDelete * 1000,
           isUtc: true,
         );
         String formattedDate =
@@ -226,7 +226,7 @@ class _ProScreenState extends State<ProScreen> {
       }
       if (proInfoPat.reBind > 0) {
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-          proInfoPat.reBind.toInt() * 1000,
+          proInfoPat.reBind * 1000,
           isUtc: true,
         );
         String formattedDate =

@@ -1,6 +1,6 @@
 import 'package:event/event.dart';
 import 'package:wax/basic/methods.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 
 bool get isPro {
   return _proInfoAll.proInfoAf.isPro || _proInfoAll.proInfoPat.isPro;
@@ -16,6 +16,6 @@ late ProInfoAll _proInfoAll;
 
 Future reloadIsPro() async {
   _proInfoAll = await methods.proInfoAll();
-  isProEx = _proInfoAll.proInfoAf.expire.toInt();
+  isProEx = _proInfoAll.proInfoAf.expire;
   proEvent.broadcast();
 }

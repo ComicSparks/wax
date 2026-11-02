@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
 import 'package:wax/screens/components/content_builder.dart';
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/download_info_card.dart';
-import 'package:fixnum/fixnum.dart' as $fixnum;
-
 import 'exporting_screen.dart';
 
 class ExportsScreen extends StatefulWidget {
@@ -18,7 +16,7 @@ class ExportsScreen extends StatefulWidget {
 class _ExportsScreenState extends State<ExportsScreen> {
   Future<ComicDownloadsRes> _future = methods.downloads();
   Key _key = UniqueKey();
-  List<$fixnum.Int64> selected = [];
+  List<int> selected = [];
 
   @override
   Widget build(BuildContext context) {

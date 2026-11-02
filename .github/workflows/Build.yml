@@ -5,6 +5,7 @@ on:
 
 env:
   flutter_channel: 'stable'
+  flutter_version: '3.47.0'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -25,119 +26,71 @@ jobs:
         config:
           - target: windows
             host: windows-latest
-            flutter_version: '2.10.3'
-            go_version: '1.23'
           - target: macos
             host: macos-latest
-            flutter_version: '2.10.3'
-            go_version: '1.23'
           - target: linux
             host: ubuntu-latest
-            flutter_version: '2.10.3'
-            go_version: '1.23'
           - target: ios
             host: macos-latest
-            flutter_version: '3.10.5'
-            go_version: '1.24'
-          - target: ios
-            host: macos-latest
-            flutter_version: '2.10.5'
-            go_version: '1.24'
           - target: android
             host: ubuntu-latest
-            flutter_version: '3.10.5'
-            go_version: '1.24'
-          - target: android
-            host: ubuntu-latest
-            flutter_version: '2.10.5'
-            go_version: '1.24'
 
     runs-on: ${{ matrix.config.host }}
 
     env:
       TARGET: ${{ matrix.config.target }}
-      flutter_version: ${{ matrix.config.flutter_version }}
-      go_version: ${{ matrix.config.go_version }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup golang
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ env.go_version }}
-
-      - name: Cache go modules (Linux/Android)
-        if: matrix.config.target == 'android' || matrix.config.target == 'linux'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache go modules (macOS/ios)
-        if: matrix.config.target == 'macos' || matrix.config.target == 'ios'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/Library/Caches/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache go modules (Windows)
-        if: matrix.config.target == 'windows'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~\AppData\Local\go-build
-            ~\go\pkg\mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
       - name: Setup flutter
-        if: true
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.flutter_channel }}
           flutter-version: ${{ env.flutter_version }}
-          architecture: x64
 
-      - name: Install cargo tools (Android)
-        if: matrix.config.target == 'android'
-        run: |
-          cargo install --force cargo-ndk
+      - name: Setup rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Clear rust
+        shell: bash
+        run: rm -rf rust
 
       - name: Check core
-        if: true
         uses: actions/checkout@v3
         with:
           repository: 'niuhuan/wax-go-core'
           token: ${{ secrets.GH_TOKEN }}
-          path: 'go'
+          path: 'rust'
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
 
       - name: Cache Flutter dependencies (Linux/Android)
-        if: true && ( matrix.config.target == 'android' || matrix.config.target == 'linux' )
+        if: matrix.config.target == 'android' || matrix.config.target == 'linux'
         uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
-          key: ${{ runner.os }}-flutter
+          key: ${{ runner.os }}-flutter-${{ env.flutter_version }}
 
       - name: Cache Flutter dependencies (Mac host)
-        if: true && ( matrix.config.target == 'ios' || matrix.config.target == 'macos' )
+        if: matrix.config.target == 'ios' || matrix.config.target == 'macos'
         uses: actions/cache@v3
         with:
           path: /Users/runner/hostedtoolcache/flutter
-          key: ${{ runner.os }}-flutter
+          key: ${{ runner.os }}-flutter-${{ env.flutter_version }}
 
       - name: Cache Gradle dependencies (Android)
-        if: true && matrix.config.target == 'android'
+        if: matrix.config.target == 'android'
         uses: actions/cache@v3
         with:
           path: |
@@ -148,142 +101,83 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup java (Android)
-        if: true && matrix.config.target == 'android'
-        uses: actions/setup-java@v3
+        if: matrix.config.target == 'android'
+        uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 17
           distribution: 'zulu'
 
-      - if: true && matrix.config.target == 'android'
-        name: Setup android tools (Android)
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 8512546
-          packages: 'platform-tools platforms;android-32 build-tools;30.0.2'
-      
-      # - if: true && matrix.config.target == 'android'
-      #   name: Install NDK
-      #   run: sdkmanager "ndk;28.0.13004108"
-          
-      - name: Setup msys2 (Windows)
-        if: true && matrix.config.target == 'windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          install: gcc make
-
       - name: Install dependencies (Linux)
-        if: true && matrix.config.target == 'linux'
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        if: matrix.config.target == 'linux'
         run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libfuse2
           curl -JOL https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod a+x appimagetool-x86_64.AppImage
-          mkdir -p ${GITHUB_WORKSPACE}/bin
-          mv appimagetool-x86_64.AppImage ${GITHUB_WORKSPACE}/bin/appimagetool
-          echo ::add-path::${GITHUB_WORKSPACE}/bin
-          sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev xorg-dev libfuse2
+          mkdir -p "${GITHUB_WORKSPACE}/bin"
+          mv appimagetool-x86_64.AppImage "${GITHUB_WORKSPACE}/bin/appimagetool"
+          echo "${GITHUB_WORKSPACE}/bin" >> "${GITHUB_PATH}"
 
-      - name: Install hover (desktop)
-        if: true && ( matrix.config.target == 'linux' || matrix.config.target == 'windows' || matrix.config.target == 'macos')
-        run: |
-          go install github.com/go-flutter-desktop/hover@latest
-          cd go
-          go mod tidy
-          cd ..
-
-      - name: Install go mobile (mobile)
-        if: true && ( matrix.config.target == 'ios' || matrix.config.target == 'android' )
-        run: |
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          cd go
-          go mod tidy
-          gomobile init
-          go get golang.org/x/mobile/bind
-          cd ..
-
-      - name: Set-Version (All)
-        if: true
-        run: |
-          cd ci
-          cp version.code.txt ../lib/assets/version.txt
-
-      - name: Upgrade deps version (flutter2 non-mac)
-        if: true && matrix.config.host != 'macos-latest' && startsWith(matrix.config.flutter_version, '2')
-        run: |
-          sed -i "s/another_xlider: ^1.0.1+2/another_xlider: 1.0.1+2/g" pubspec.yaml
-          sed -i "s/flutter_styled_toast: ^2.0.0/flutter_styled_toast: 2.0.0/g" pubspec.yaml
-          sed -i "s/filesystem_picker: ^3.0.0-beta.1/filesystem_picker: 2.0.0/g" pubspec.yaml
-          sed -i "s/file_picker: ^5.2.1/file_picker: 4.6.1/g" pubspec.yaml
-          sed -i "s/multi_select_flutter: ^4.0.0/multi_select_flutter: 4.1.2/g" pubspec.yaml
-          sed -i "s/modal_bottom_sheet: ^3.0.0-pre/modal_bottom_sheet: 2.0.1/g" pubspec.yaml
-          sed -i "s/photo_view: ^0.14.0/photo_view: 0.13.0/g" pubspec.yaml
-          flutter pub get
-
-      - name: Upgrade deps version (flutter2 mac)
-        if: true && matrix.config.host == 'macos-latest' && startsWith(matrix.config.flutter_version, '2')
-        run: |
-          brew install gnu-sed
-          gsed -i "s/another_xlider: ^1.0.1+2/another_xlider: 1.0.1+2/g" pubspec.yaml
-          gsed -i "s/flutter_styled_toast: ^2.0.0/flutter_styled_toast: 2.0.0/g" pubspec.yaml
-          gsed -i "s/filesystem_picker: ^3.0.0-beta.1/filesystem_picker: 2.0.0/g" pubspec.yaml
-          gsed -i "s/file_picker: ^5.2.1/file_picker: 4.6.1/g" pubspec.yaml
-          gsed -i "s/multi_select_flutter: ^4.0.0/multi_select_flutter: 4.1.2/g" pubspec.yaml
-          gsed -i "s/multi_select_flutter: ^4.0.0/multi_select_flutter: 4.1.2/g" pubspec.yaml
-          gsed -i "s/modal_bottom_sheet: ^3.0.0-pre/modal_bottom_sheet: 2.0.1/g" pubspec.yaml
-          flutter pub get
+      - name: Flutter pub get
+        run: flutter pub get
 
       - name: Build (windows)
-        if: true && matrix.config.target == 'windows'
+        if: matrix.config.target == 'windows'
         run: |
-          hover build windows
-          curl -JOL https://github.com/ComicSparks/build-tools/releases/download/storage/Resource_Hacker_5.1.8.zip
-          Expand-Archive .\Resource_Hacker_5.1.8.zip
-          cmd /c "Resource_Hacker_5.1.8\ResourceHacker.exe" -open go\build\outputs\windows-release\wax.exe -save go\build\outputs\windows-release\wax.exe -action addskip -res go/assets/icon.ico -mask ICONGROUP,MAINICON,0
-          cd go\build\outputs\windows-release
-          DEL flutter_engine.pdb
-          DEL flutter_engine.exp
-          DEL flutter_engine.lib
-          Compress-Archive * ../../../../build/build.zip
+          flutter config --enable-windows-desktop
+          flutter build windows --release
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\build.zip
 
       - name: Build (macos)
-        if: true && matrix.config.target == 'macos'
+        if: matrix.config.target == 'macos'
         run: |
-          hover build darwin-dmg
-          mv go/build/outputs/darwin-dmg-release/*.dmg build/build.dmg
+          flutter config --enable-macos-desktop
+          flutter build macos --release
+          hdiutil create -volname wax -srcfolder build/macos/Build/Products/Release/wax.app -ov -format UDZO build/build.dmg
 
       - name: Build (linux)
-        if: true && matrix.config.target == 'linux'
+        if: matrix.config.target == 'linux'
         run: |
-          curl -JOL https://github.com/junmer/source-han-serif-ttf/raw/master/SubsetTTF/CN/SourceHanSerifCN-Regular.ttf
-          mkdir -p fonts
-          mv SourceHanSerifCN-Regular.ttf fonts/Roboto.ttf
-          cat ci/linux_font.yaml >> pubspec.yaml
-          hover build linux-appimage
-          mv go/build/outputs/linux-appimage-release/*.AppImage build/build.AppImage
+          flutter config --enable-linux-desktop
+          flutter build linux --release
+          APPDIR=build/AppDir
+          rm -rf "$APPDIR"
+          mkdir -p "$APPDIR/usr"
+          cp -a build/linux/x64/release/bundle/. "$APPDIR/usr/"
+          cp lib/assets/icon.png "$APPDIR/wax.png"
+          printf '%s\n' '[Desktop Entry]' 'Name=wax' 'Exec=wax' 'Icon=wax' 'Type=Application' 'Categories=Utility;' > "$APPDIR/wax.desktop"
+          printf '%s\n' '#!/bin/sh' 'HERE="$(dirname "$(readlink -f "$0")")"' 'export LD_LIBRARY_PATH="$HERE/usr/lib:${LD_LIBRARY_PATH}"' 'exec "$HERE/usr/wax" "$@"' > "$APPDIR/AppRun"
+          chmod +x "$APPDIR/AppRun"
+          appimagetool "$APPDIR" build/build.AppImage
 
       - name: Append application-identifier (ios)
-        if: true && matrix.config.target == 'ios'
+        if: matrix.config.target == 'ios'
         run: |
           /usr/libexec/PlistBuddy -c 'Add :application-identifier string niuhuan.wax' ios/Runner/Info.plist
 
       - name: Build (ios)
-        if: true && matrix.config.target == 'ios'
+        if: matrix.config.target == 'ios'
         run: |
-          sh scripts/build-ipa.sh
+          flutter build ios --release --no-codesign
+          mkdir -p build/Payload
+          cp -R build/ios/iphoneos/Runner.app build/Payload/
+          cd build
+          zip -9 -r nosign.ipa Payload
 
       - name: Build (android)
-        if: true && matrix.config.target == 'android'
+        if: matrix.config.target == 'android'
         run: |
-          sh scripts/build-apk.sh
+          flutter build apk --release --target-platform android-arm,android-arm64,android-x64
 
       - name: Sign APK (Android)
-        if: true && matrix.config.target == 'android'
+        if: matrix.config.target == 'android'
         env:
           KEY_FILE_BASE64: ${{ secrets.KEY_FILE_BASE64 }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          sh scripts/sign-apk-github-actions.sh
+          echo "$KEY_FILE_BASE64" | base64 -d > key.jks
+          APKSIGNER="$(find "${ANDROID_SDK_ROOT:-$ANDROID_HOME}" -path '*/build-tools/*/apksigner' | sort | tail -n 1)"
+          echo "$KEY_PASSWORD" | "$APKSIGNER" sign --ks key.jks --ks-pass stdin --key-pass stdin build/app/outputs/flutter-apk/app-release.apk
 
       - if: matrix.config.target == 'ios'
         name: 'Upload Artifact (iOS)'

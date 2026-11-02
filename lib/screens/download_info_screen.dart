@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../basic/commons.dart';
 import '../basic/methods.dart';
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'browser_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/content_builder.dart';
@@ -72,7 +72,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
               imageWidth = imageWidth / 2;
               var subColor = Color.alphaBlend(
                 Colors.grey.shade500.withAlpha(80),
-                (Theme.of(context).textTheme.bodyText1?.color ?? Colors.black),
+                (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black),
               );
               return ListView(
                 children: [
@@ -161,16 +161,19 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                                 id: widget.e.id,
                                 cover: widget.e.cover,
                                 title: widget.e.title,
+                                favouriteId: 0,
                               ),
                               loadResult: () async {
                                 var pages =
                                     (await methods.downloadPages(widget.e.id))
                                         .pages;
                                 var pagesRsp = ComicPagesResult(
-                                  pages: pages.map((e) => ComicPage(
-                                        caption: e.caption,
-                                        url: e.url,
-                                      )),
+                                  pages: pages
+                                      .map((e) => ComicPage(
+                                            caption: e.caption,
+                                            url: e.url,
+                                          ))
+                                      .toList(),
                                 );
                                 return pagesRsp;
                               },
@@ -209,6 +212,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                                 id: widget.e.id,
                                 cover: widget.e.cover,
                                 title: widget.e.title,
+                                favouriteId: 0,
                               ),
                               initRank: position,
                               loadResult: () async {
@@ -216,10 +220,12 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                                     (await methods.downloadPages(widget.e.id))
                                         .pages;
                                 var pagesRsp = ComicPagesResult(
-                                  pages: pages.map((e) => ComicPage(
-                                        caption: e.caption,
-                                        url: e.url,
-                                      )),
+                                  pages: pages
+                                      .map((e) => ComicPage(
+                                            caption: e.caption,
+                                            url: e.url,
+                                          ))
+                                      .toList(),
                                 );
                                 return pagesRsp;
                               },

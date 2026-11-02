@@ -8,7 +8,7 @@ import 'package:wax/basic/methods.dart';
 import '../basic/commons.dart';
 import '../screens/components/badge.dart';
 
-const _versionAssets = 'lib/assets/version.txt';
+final _pubspecVersion = RegExp(r'^version:\s*(\d+\.\d+\.\d+)', multiLine: true);
 RegExp _versionExp = RegExp(r"^v\d+\.\d+.\d+$");
 
 Future _openRelease() async {
@@ -27,7 +27,9 @@ String? _downloadUrl;
 Future initVersion() async {
   // 当前版本
   try {
-    _version = (await rootBundle.loadString(_versionAssets)).trim();
+    final pubspec = await rootBundle.loadString('pubspec.yaml');
+    final match = _pubspecVersion.firstMatch(pubspec);
+    _version = match == null ? "dirty" : "v${match.group(1)}";
   } catch (e) {
     _version = "dirty";
   }

@@ -1,14 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:convert/convert.dart';
 import 'package:flutter/services.dart';
-import 'package:protobuf/protobuf.dart' as $pb;
-import 'package:fixnum/fixnum.dart' as $fixnum;
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart' show Int64List;
 import 'package:wax/configs/host.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
+import 'package:wax/src/rust/api/wax.dart' as rust;
 
 final methods = Methods._();
 
@@ -19,68 +16,33 @@ class Methods {
 
   static const MethodChannel _channel = MethodChannel("methods");
 
-  Future<Uint8List> _flatInvoke(
-    String method,
-    $pb.GeneratedMessage params,
-  ) async {
-    String hexString = await _channel.invokeMethod("flatInvoke", {
-      "method": method,
-      "params": params.writeToBuffer(),
-    });
-    return Uint8List.fromList(hex.decode(hexString));
+  Future saveProperty({required String k, required String v}) {
+    return rust.saveProperty(k: k, v: v);
   }
 
-  Future saveProperty({required String k, required String v}) async {
-    return _flatInvoke(
-      "saveProperty",
-      SavePropertyQuery(k: k, v: v),
-    );
-  }
-
-  Future<String> loadProperty({required String k}) async {
-    return LoadPropertyResult.fromBuffer(await _flatInvoke(
-      "loadProperty",
-      LoadPropertyQuery(k: k),
-    ))
-        .v;
+  Future<String> loadProperty({required String k}) {
+    return rust.loadProperty(k: k);
   }
 
   Future<FetchComicResult> fetchComic(
     String filterName,
     String filterValue,
     int pageNumber,
-  ) async {
-    final buff = await _flatInvoke(
-        "fetchComic",
-        FetchComicQuery(
-          host: host,
-          filterName: filterName,
-          filterValue: filterValue,
-          pageNumber: $fixnum.Int64.fromInts(0, pageNumber),
-        ));
-    return FetchComicResult.fromBuffer(buff);
+  ) {
+    return rust.fetchComic(
+      host: host,
+      filterName: filterName,
+      filterValue: filterValue,
+      pageNumber: pageNumber,
+    );
   }
 
-  Future<FetchComicResult> searchComic(String keyword, int page) async {
-    final buff = await _flatInvoke(
-        "searchComic",
-        ComicSearchQuery(
-          host: host,
-          query: keyword,
-          pageNumber: $fixnum.Int64.fromInts(0, page),
-        ));
-    return FetchComicResult.fromBuffer(buff);
+  Future<FetchComicResult> searchComic(String keyword, int page) {
+    return rust.searchComic(host: host, query: keyword, pageNumber: page);
   }
 
-  Future<FetchComicResult> rankComic(String type, int page) async {
-    final buff = await _flatInvoke(
-        "rankComic",
-        ComicSearchQuery(
-          host: host,
-          query: type,
-          pageNumber: $fixnum.Int64.fromInts(0, page),
-        ));
-    return FetchComicResult.fromBuffer(buff);
+  Future<FetchComicResult> rankComic(String type, int page) {
+    return rust.rankComic(host: host, query: type, pageNumber: page);
   }
 
   Future saveImageToGallery(String path) async {
@@ -106,28 +68,20 @@ class Methods {
   Future setAndroidMode(String androidDisplayMode) {
     return _channel.invokeMethod(
       "androidSetMode",
-      {
-        "mode": androidDisplayMode,
-      },
+      {"mode": androidDisplayMode},
     );
   }
 
-  Future autoClean({required int time}) async {
-    return _flatInvoke(
-      "autoClean",
-      AutoCleanQuery(
-        expire: $fixnum.Int64.fromInts(0, time),
-      ),
-    );
+  Future<String> androidDataLocal() async {
+    return await _channel.invokeMethod("dataLocal");
   }
 
-  Future<String> httpGet({required String url}) async {
-    final buff = await _flatInvoke(
-        "httpGet",
-        HttpGetQuery(
-          url: url,
-        ));
-    return HttpGetResult.fromBuffer(buff).content;
+  Future autoClean({required int time}) {
+    return rust.autoClean(expire: time);
+  }
+
+  Future<String> httpGet({required String url}) {
+    return rust.httpGet(url: url);
   }
 
   Future<Map<String, String>> configLinks() async {
@@ -157,68 +111,30 @@ class Methods {
     return Map<String, dynamic>.from(decoded);
   }
 
-  Future cleanAllCache() async {
-    // todo
+  Future cleanAllCache() async {}
+
+  Future<CacheImageResult> cacheImage(String url, {bool ignoreFormat = false}) {
+    return rust.cacheImage(host: host, url: url, ignoreFormat: ignoreFormat);
   }
 
-  Future<CacheImageResult> cacheImage(String url,
-      {bool ignoreFormat = false}) async {
-    final buff = await _flatInvoke(
-        "cacheImage",
-        CacheImageQuery(
-          host: host,
-          url: url,
-          ignoreFormat: ignoreFormat,
-        ));
-    return CacheImageResult.fromBuffer(buff);
+  Future<ComicInfoResult> comicInfo(int id) {
+    return rust.comicInfo(host: host, id: id);
   }
 
-  Future<ComicInfoResult> comicInfo($fixnum.Int64 id) async {
-    final buff = await _flatInvoke(
-        "comicInfo",
-        ComicInfoQuery(
-          host: host,
-          id: id,
-        ));
-    return ComicInfoResult.fromBuffer(buff);
+  Future<FetchComicResult> comicChapters(int id) {
+    return rust.comicChapters(host: host, id: id);
   }
 
-  Future<FetchComicResult> comicChapters($fixnum.Int64 id) async {
-    final buff = await _flatInvoke(
-        "comicChapters",
-        ComicInfoQuery(
-          host: host,
-          id: id,
-        ));
-    return FetchComicResult.fromBuffer(buff);
-  }
-
-  Future<ComicPagesResult> comicPages($fixnum.Int64 id) async {
-    final buff = await _flatInvoke(
-        "comicPages",
-        ComicInfoQuery(
-          host: host,
-          id: id,
-        ));
-    return ComicPagesResult.fromBuffer(buff);
+  Future<ComicPagesResult> comicPages(int id) {
+    return rust.comicPages(host: host, id: id);
   }
 
   Future login(String username, String password) {
-    return _flatInvoke(
-        "login",
-        UserLoginQuery(
-          host: host,
-          username: username,
-          password: password,
-        ));
+    return rust.login(host: host, username: username, password: password);
   }
 
-  /// 把浏览器登录后采集到的 Cookie 交给后端，并校验是否已经登录。
   Future setCookies(String cookieString) {
-    return _flatInvoke(
-      "setCookies",
-      SavePropertyQuery(k: host, v: cookieString),
-    );
+    return rust.setCookies(host: host, cookie: cookieString);
   }
 
   Future register({
@@ -229,297 +145,132 @@ class Methods {
     required String pass,
     required String passAgain,
   }) {
-    return _flatInvoke(
-      "register",
-      UserRegisterQuery(
-        host: host,
-        username: username,
-        nickname: nickname,
-        email: email,
-        sex: sex,
-        pass: pass,
-        passAgain: passAgain,
-      ),
+    return rust.register(
+      host: host,
+      username: username,
+      nickname: nickname,
+      email: email,
+      sex: sex,
+      pass: pass,
+      passAgain: passAgain,
     );
   }
 
-  Future<IsPro> isPro() async {
-    return IsPro.fromBuffer(await _flatInvoke(
-      "isPro",
-      Empty(),
-    ));
-  }
+  Future<IsPro> isPro() => rust.isPro();
 
   Future<IsPro> reloadPro() async {
-    return IsPro.fromBuffer(await _flatInvoke(
-      "reloadPro",
-      Empty(),
-    ));
+    await rust.reloadPro();
+    return rust.isPro();
   }
 
-  Future inputCdKey(String k) {
-    return _flatInvoke("inputCdKey", Puff(value: k));
-  }
+  Future inputCdKey(String k) => rust.inputCdKey(value: k);
 
-  Future<String> getProServerName() async {
-    return Puff.fromBuffer(await _flatInvoke(
-      "getProServerName",
-      Empty(),
-    ))
-        .value;
-  }
+  Future<String> getProServerName() => rust.getProServerName();
 
   Future setProServerName(String serverName) {
-    return _flatInvoke("setProServerName", Puff(value: serverName));
+    return rust.setProServerName(serverName: serverName);
   }
 
-  Future saveViewInfo(ComicSimple simple) async {
-    return _flatInvoke(
-      "initComicViewLog",
-      simple,
-    );
+  Future saveViewInfo(ComicSimple simple) {
+    return rust.initComicViewLog(comic: simple);
   }
 
-  Future<bool> hasDownload($fixnum.Int64 comicId) async {
-    return BoolValue.fromBuffer(await _flatInvoke(
-      "hasDownload",
-      DownloadInfoQuery(
-        id: comicId,
-      ),
-    ))
-        .value;
+  Future<bool> hasDownload(int comicId) {
+    return rust.hasDownload(id: comicId);
   }
 
-  Future updateViewLog($fixnum.Int64 id, int initRank) async {
-    return _flatInvoke(
-      "saveComicViewLog",
-      ComicViewLogDto(
-        comicId: id,
-        position: $fixnum.Int64(initRank),
-      ),
-    );
+  Future updateViewLog(int id, int initRank) {
+    return rust.saveComicViewLog(comicId: id, position: initRank);
   }
 
-  /// 合集内某一话的页码。不单独进入历史列表。
-  Future saveChapterProgress($fixnum.Int64 id, int initRank) async {
-    return _flatInvoke(
-      "saveChapterProgress",
-      ComicViewLogDto(
-        comicId: id,
-        position: $fixnum.Int64(initRank),
-      ),
-    );
+  Future saveChapterProgress(int id, int initRank) {
+    return rust.saveChapterProgress(comicId: id, position: initRank);
   }
 
-  Future<int> loadViewLog($fixnum.Int64 id) async {
-    var buffer = await _flatInvoke(
-      "loadComicViewLog",
-      ComicViewLogDto(
-        comicId: id,
-      ),
-    );
-    var result = ComicViewLogDto.fromBuffer(buffer);
-    return result.position.toInt();
+  Future<int> loadViewLog(int id) {
+    return rust.loadComicViewLog(comicId: id);
   }
 
-  Future<bool> hasViewLog($fixnum.Int64 id) async {
-    return BoolValue.fromBuffer(await _flatInvoke(
-      "hasComicViewLog",
-      ComicViewLogDto(
-        comicId: id,
-      ),
-    ))
-        .value;
+  Future<bool> hasViewLog(int id) {
+    return rust.hasComicViewLog(comicId: id);
   }
 
-  Future<Map<String, bool>> hasViewLogs(List<$fixnum.Int64> ids) async {
-    final buff = await _flatInvoke(
-      "hasComicViewLogs",
-      ComicIds(ids: ids),
-    );
-    final result = ComicViewedMarks.fromBuffer(buff);
-    final map = <String, bool>{};
-    for (final item in result.items) {
-      map[item.comicId.toString()] = item.viewed;
-    }
-    return map;
+  Future<Map<String, bool>> hasViewLogs(List<int> ids) async {
+    final marks = await rust.hasComicViewLogs(ids: Int64List.fromList(ids));
+    return {for (final item in marks) item.comicId.toString(): item.viewed};
   }
 
-  Future autoClearViewLog({required int time}) async {
-    return _flatInvoke(
-      "autoClearViewLog",
-      AutoCleanQuery(
-        expire: $fixnum.Int64.fromInts(0, time),
-      ),
-    );
+  Future autoClearViewLog({required int time}) {
+    return rust.autoClearViewLog(expire: time);
   }
 
   Future pushToDownloads(List<ComicSimple> list) {
-    return _flatInvoke(
-      "pushToDownloads",
-      PushToDownloads(
-        host: host,
-        comics: list,
-      ),
-    );
+    return rust.pushToDownloads(host: host, comics: list);
   }
 
-  Future<ComicDownloadsRes> downloads() async {
-    return ComicDownloadsRes.fromBuffer(await _flatInvoke(
-      "downloads",
-      Empty(),
-    ));
+  Future<ComicDownloadsRes> downloads() => rust.downloads();
+
+  Future<ComicDownloadInfoDto> downloadInfo(int id) {
+    return rust.downloadInfo(id: id);
   }
 
-  Future<ComicDownloadInfoDto> downloadInfo($fixnum.Int64 id) async {
-    return ComicDownloadInfoDto.fromBuffer(await _flatInvoke(
-      "downloadInfo",
-      DownloadInfoQuery(
-        id: id,
-      ),
-    ));
+  Future<DownloadComicPages> downloadPages(int id) {
+    return rust.downloadPages(id: id);
   }
 
-  Future<DownloadComicPages> downloadPages($fixnum.Int64 id) async {
-    return DownloadComicPages.fromBuffer(await _flatInvoke(
-      "downloadPages",
-      DownloadInfoQuery(
-        id: id,
-      ),
-    ));
-  }
-
-  Future resetDownload() {
-    return _flatInvoke(
-      "resetDownload",
-      Empty(),
-    );
-  }
+  Future resetDownload() => rust.resetDownload();
 
   Future setDownloadThread(int count) {
-    return _flatInvoke(
-      "setDownloadThread",
-      IntValue(
-        value: $fixnum.Int64.fromInts(0, count),
-      ),
+    return rust.setDownloadThread(count: count);
+  }
+
+  Future<int> getDownloadThread() => rust.getDownloadThread();
+
+  Future deleteDownloadById(int comicId) {
+    return rust.deleteDownloadById(id: comicId);
+  }
+
+  Future<LoginUser> loginUser() {
+    return rust.loginUser(host: host);
+  }
+
+  Future<FetchComicResult> favoriteList(int partitionId, int page) {
+    return rust.favoriteList(host: host, partitionId: partitionId, page: page);
+  }
+
+  Future deleteFavourite(int favouriteId) {
+    return rust.deleteFavourite(host: host, favouriteId: favouriteId);
+  }
+
+  Future<FavoritesPartitionResult> favoritesPartitions() {
+    return rust.favoritesPartitions(host: host);
+  }
+
+  Future createFavoritesPartition(String name) {
+    return rust.createFavoritesPartition(host: host, name: name);
+  }
+
+  Future renameFavoritesPartition(int id, String name) {
+    return rust.renameFavoritesPartition(host: host, id: id, name: name);
+  }
+
+  Future deleteFavoritesPartition(int id) {
+    return rust.deleteFavoritesPartition(host: host, id: id);
+  }
+
+  Future favoriteComic(int comicId, int partitionId) {
+    return rust.favoriteComic(
+      host: host,
+      comicId: comicId,
+      partitionId: partitionId,
     );
   }
 
-  Future<int> getDownloadThread() async {
-    return IntValue.fromBuffer(await _flatInvoke(
-      "getDownloadThread",
-      Empty(),
-    ))
-        .value
-        .toInt();
-  }
-
-  Future deleteDownloadById($fixnum.Int64 comicId) {
-    return _flatInvoke(
-      "deleteDownloadById",
-      IntValue(
-        value: comicId,
-      ),
-    );
-  }
-
-  Future<LoginUser> loginUser() async {
-    final buff = await _flatInvoke(
-        "loginUser",
-        LoginUserQuery(
-          host: host,
-        ));
-    return LoginUser.fromBuffer(buff);
-  }
-
-  Future<FetchComicResult> favoriteList(int partitionId, int page) async {
-    final buff = await _flatInvoke(
-        "favoriteList",
-        FavoriteListQuery(
-          host: host,
-          partitionId: $fixnum.Int64.fromInts(0, partitionId),
-          page: $fixnum.Int64.fromInts(0, page),
-        ));
-    return FetchComicResult.fromBuffer(buff);
-  }
-
-  Future deleteFavourite($fixnum.Int64 favouriteId) async {
-    return _flatInvoke(
-      "deleteFavourite",
-      DeleteFavoriteQuery(
-        host: host,
-        favouriteId: favouriteId,
-      ),
-    );
-  }
-
-  Future<FavoritesPartitionResult> favoritesPartitions() async {
-    final buff = await _flatInvoke(
-        "favoritesPartitions",
-        FavoritesPartitionsQuery(
-          host: host,
-        ));
-    return FavoritesPartitionResult.fromBuffer(buff);
-  }
-
-  Future createFavoritesPartition(String name) async {
-    return _flatInvoke(
-      "createFavoritesPartition",
-      CreateFavoritesPartitionQuery(
-        host: host,
-        name: name,
-      ),
-    );
-  }
-
-  Future renameFavoritesPartition(int id, String name) async {
-    return _flatInvoke(
-      "renameFavoritesPartition",
-      RenameFavoritesPartitionQuery(
-        host: host,
-        id: $fixnum.Int64.fromInts(0, id),
-        name: name,
-      ),
-    );
-  }
-
-  Future deleteFavoritesPartition(int id) async {
-    return _flatInvoke(
-      "deleteFavoritesPartition",
-      RenameFavoritesPartitionQuery(
-        host: host,
-        id: $fixnum.Int64.fromInts(0, id),
-        name: "",
-      ),
-    );
-  }
-
-  Future favoriteComic(
-    $fixnum.Int64? comicId,
-    $fixnum.Int64? partitionId,
-  ) async {
-    return _flatInvoke(
-      "favoriteComic",
-      FavoriteComicQuery(
-        host: host,
-        comicId: comicId,
-        partitionId: partitionId,
-      ),
-    );
-  }
-
-  Future exportToDir(
-    String folder,
-    List<$fixnum.Int64> comicIds,
-    int exportType,
-  ) {
-    return _flatInvoke(
-      "exportToDir",
-      ExportComicsQuery(
-        comicIds: comicIds,
-        folder: folder,
-        exportType: exportType,
-      ),
+  Future exportToDir(String folder, List<int> comicIds, int exportType) {
+    return rust.exportToDir(
+      folder: folder,
+      comicIds: Int64List.fromList(comicIds),
+      exportType: exportType,
     );
   }
 
@@ -527,50 +278,29 @@ class Methods {
     return await _channel.invokeMethod('iosGetDocumentDir', '');
   }
 
-  Future<FetchComicResult> fetchHistory(int id) async {
-    final buff = await _flatInvoke(
-        "fetchHistory",
-        PageQuery(
-          pageNumber: $fixnum.Int64(id),
-        ));
-    return FetchComicResult.fromBuffer(buff);
+  Future<String> iosGetApplicationSupportDir() async {
+    return await _channel.invokeMethod('iosGetApplicationSupportDir');
   }
 
-  Future clearHistory() async {
-    return _flatInvoke(
-      "clearHistory",
-      Empty(),
-    );
+  Future<FetchComicResult> fetchHistory(int id) {
+    return rust.fetchHistory(pageNumber: id);
   }
 
-  Future clearHistoryById($fixnum.Int64 id) async {
-    return _flatInvoke(
-      "clearHistoryById",
-      ComicInfoQuery(
-        host: host,
-        id: id,
-      ),
-    );
+  Future clearHistory() => rust.clearHistory();
+
+  Future clearHistoryById(int id) {
+    return rust.clearHistoryById(id: id);
   }
 
   Future setPatAccessKey(String accessKey) {
-    return _flatInvoke("setPatAccessKey", Puff(value: accessKey));
+    return rust.setPatAccessKey(accessKey: accessKey);
   }
 
-  Future reloadPatAccount() {
-    return _flatInvoke("reloadPatAccount", Empty());
-  }
+  Future reloadPatAccount() => rust.reloadPatAccount();
 
-  Future bindThisAccount() {
-    return _flatInvoke("bindThisAccount", Empty());
-  }
+  Future bindThisAccount() => rust.bindThisAccount();
 
-  Future clearPat() {
-    return _flatInvoke("clearPat", Empty());
-  }
+  Future clearPat() => rust.clearPat();
 
-  Future<ProInfoAll> proInfoAll() async {
-    final buff = await _flatInvoke("proInfoAll", Empty());
-    return ProInfoAll.fromBuffer(buff);
-  }
+  Future<ProInfoAll> proInfoAll() => rust.proInfoAll();
 }

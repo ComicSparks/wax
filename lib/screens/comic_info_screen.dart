@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wax/basic/methods.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 
 import '../basic/commons.dart';
 import 'browser_screen.dart';
@@ -171,7 +171,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         imageWidth = imageWidth / 2;
         var subColor = Color.alphaBlend(
           Colors.grey.shade500.withAlpha(80),
-          (Theme.of(context).textTheme.bodyText1?.color ?? Colors.black),
+          (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black),
         );
         return ListView(
           children: [

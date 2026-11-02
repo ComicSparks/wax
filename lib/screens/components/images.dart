@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:wax/protos/properties.pb.dart';
 import 'dart:io';
-import 'dart:ui' as ui show Codec;
+import 'dart:ui' as ui;
 import '../../basic/commons.dart';
 import '../../basic/methods.dart';
 import '../file_photo_view_screen.dart';
@@ -19,9 +18,9 @@ class ComicImageProvider extends ImageProvider<ComicImageProvider> {
   ComicImageProvider({required this.url, this.scale = 1.0});
 
   @override
-  ImageStreamCompleter load(ComicImageProvider key, DecoderCallback decode) {
+  ImageStreamCompleter loadImage(ComicImageProvider key, ImageDecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
-      codec: _loadAsync(key),
+      codec: _loadAsync(key, decode),
       scale: key.scale,
     );
   }
@@ -31,23 +30,26 @@ class ComicImageProvider extends ImageProvider<ComicImageProvider> {
     return SynchronousFuture<ComicImageProvider>(this);
   }
 
-  Future<ui.Codec> _loadAsync(ComicImageProvider key) async {
+  Future<ui.Codec> _loadAsync(ComicImageProvider key, ImageDecoderCallback decode) async {
     assert(key == this);
-    var lc = (await methods.cacheImage(url)).localPath;
-    return PaintingBinding.instance!.instantiateImageCodec(
-      await File(lc).readAsBytes(),
-    );
+    final lc = (await methods.cacheImage(url)).localPath;
+    final bytes = await File(lc).readAsBytes();
+    if (bytes.isEmpty) {
+      PaintingBinding.instance.imageCache.evict(key);
+      throw StateError('$url is empty and cannot be loaded as an image.');
+    }
+    return decode(await ui.ImmutableBuffer.fromUint8List(bytes));
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) return false;
-    final ComicImageProvider typedOther = other;
+    final ComicImageProvider typedOther = other as ComicImageProvider;
     return url == typedOther.url && scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(url, scale);
+  int get hashCode => Object.hash(url, scale);
 
   @override
   String toString() => '$runtimeType('

@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:wax/basic/methods.dart';
-import 'package:wax/protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'package:wax/screens/components/images.dart';
 import '../../basic/commons.dart';
 import '../../configs/pager_column_number.dart';
 import '../../configs/pager_view_mode.dart';
-import 'package:fixnum/fixnum.dart' as $fixnum;
 import '../comic_info_screen.dart';
 import 'comic_info_card.dart';
 
@@ -500,7 +499,6 @@ class _ComicListState extends State<ComicList> {
         callback: (data) async {
           try {
             await methods.deleteFavourite(data.favouriteId);
-            data.favouriteId = $fixnum.Int64.fromInts(0, 0);
             defaultToast(context, "删除成功, 刷新页面之后会消失");
           } catch (e) {
             defaultToast(context, "删除失败: $e");
@@ -548,7 +546,6 @@ class _ComicListState extends State<ComicList> {
       () async {
         try {
           await methods.deleteFavourite(data.favouriteId);
-          data.favouriteId = $fixnum.Int64.fromInts(0, 0);
           defaultToast(context, "删除成功, 刷新页面之后会消失");
         } catch (e) {
           defaultToast(context, "删除失败: $e");

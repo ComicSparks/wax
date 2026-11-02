@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
 import 'package:wax/basic/methods.dart';
 
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/actions.dart';
 import 'components/browser_bottom_sheet.dart';
 import 'components/comic_pager.dart';

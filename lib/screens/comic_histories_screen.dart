@@ -3,7 +3,7 @@ import 'package:wax/basic/commons.dart';
 import 'package:wax/screens/components/comic_list.dart';
 
 import '../basic/methods.dart';
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/comic_pager.dart';
 
 class ComicHistoriesScreen extends StatefulWidget {

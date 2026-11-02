@@ -5,12 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wax/basic/methods.dart';
-import 'package:fixnum/fixnum.dart' as $fixnum;
 import '../basic/commons.dart';
 import '../configs/android_version.dart';
 
 class ExportingScreen extends StatefulWidget {
-  final List<$fixnum.Int64> selected;
+  final List<int> selected;
 
   const ExportingScreen(this.selected, {Key? key}) : super(key: key);
 

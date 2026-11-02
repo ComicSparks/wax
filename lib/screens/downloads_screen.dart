@@ -5,7 +5,7 @@ import 'package:wax/screens/comic_info_screen.dart';
 import 'package:wax/screens/components/content_builder.dart';
 
 import '../configs/download_thread_count.dart';
-import '../protos/properties.pb.dart';
+import 'package:wax/src/rust/api/types.dart';
 import 'components/download_info_card.dart';
 import 'download_info_screen.dart';
 import 'exports_screen.dart';
@@ -70,6 +70,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                 id: e.id,
                 cover: e.cover,
                 title: e.title,
+                favouriteId: 0,
               ),
             );
           }));
