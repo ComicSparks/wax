@@ -259,7 +259,7 @@ jobs:
         run: |
           echo "$KEY_FILE_BASE64" | base64 -d > key.jks
           APKSIGNER="$(find "${ANDROID_SDK_ROOT:-$ANDROID_HOME}" -path '*/build-tools/*/apksigner' | sort | tail -n 1)"
-          echo "$KEY_PASSWORD" | "$APKSIGNER" sign --ks key.jks --ks-pass stdin --key-pass stdin build/app/outputs/flutter-apk/app-release.apk
+          printf '%s\n%s\n' "$KEY_PASSWORD" "$KEY_PASSWORD" | "$APKSIGNER" sign --ks key.jks --ks-key-alias wax22sign --ks-pass stdin --key-pass stdin build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload Asset (All)
         if: steps.check_asset.outputs.skip_build != 'true'
