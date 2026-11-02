@@ -261,6 +261,18 @@ class Methods {
     return _flatInvoke("inputCdKey", Puff(value: k));
   }
 
+  Future<String> getProServerName() async {
+    return Puff.fromBuffer(await _flatInvoke(
+      "getProServerName",
+      Empty(),
+    ))
+        .value;
+  }
+
+  Future setProServerName(String serverName) {
+    return _flatInvoke("setProServerName", Puff(value: serverName));
+  }
+
   Future saveViewInfo(ComicSimple simple) async {
     return _flatInvoke(
       "initComicViewLog",

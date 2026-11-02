@@ -30,8 +30,9 @@ subprojects { subproject ->
         return
     }
     subproject.afterEvaluate {
-        if (subproject.plugins.hasPlugin("com.android.library")) {
-            subproject.android.compileSdkVersion 34
+        def androidExt = subproject.extensions.findByName("android")
+        if (androidExt != null) {
+            androidExt.compileSdkVersion 34
         }
     }
 }

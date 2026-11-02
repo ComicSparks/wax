@@ -117,7 +117,7 @@ class _ProScreenState extends State<ProScreen> {
               "点击\"我曾经发过电\"进同步发电状态\n"
               "点击\"我刚才发了电\"兑换神秘代码\n"
               "去\"关于\"界面找到维护地址用爱发电\n"
-              "\"FAIL\"请尝试更换您的网络",
+              "更换\"发电方式\"可能解决FAIL问题",
             ),
           ),
           const Divider(),
@@ -195,6 +195,8 @@ class _ProScreenState extends State<ProScreen> {
               setState(() {});
             },
           ),
+          const Divider(),
+          const ProServerNameWidget(),
           const Divider(),
           ...patPro(),
           const Divider(),
@@ -342,5 +344,85 @@ class _ProScreenState extends State<ProScreen> {
     await reloadIsPro();
     defaultToast(context, "Success");
     setState(() {});
+  }
+}
+
+const _defaultProServerId = "ORI";
+
+const _proServerIds = <String>[
+  "ORI",
+  "jdtvmstd22deytdzenvydyil3e0jkxfu",
+  "mek5hrs65poai2eqjjofqr7ynu0nxkqx",
+  "6h2odtaft7fuvssx6v5b73pwie0dfgvm",
+  "ilsfsfkt75kp2nnfievnqcjmza0ooksc",
+  "wuwjgjgautzqf6ybwmma6e2pw40iilcy",
+  "phuto27lxoqo4skduakcs4siwu0ffwoh",
+  "4sfkal33ch44fle6u6smhwufri0cmgnv",
+];
+
+final _proServerIdPattern = RegExp(r'^[a-z0-9]+$');
+final _proServerRegionPattern = RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)+$');
+
+class ProServerNameWidget extends StatefulWidget {
+  const ProServerNameWidget({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _ProServerNameWidgetState();
+}
+
+class _ProServerNameWidgetState extends State<ProServerNameWidget> {
+  String _serverName = "";
+
+  @override
+  void initState() {
+    methods.getProServerName().then((value) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _serverName = value;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: const Text("发电方式"),
+      subtitle: Text(_loadServerName()),
+      onTap: () async {
+        var serverName = await chooseMapDialog<String>(
+          context,
+          title: "选择发电方式",
+          values: {
+            for (final id in _proServerIds) id: id,
+          },
+        );
+        if (serverName != null && serverName.isNotEmpty) {
+          final name = serverName;
+          await methods.setProServerName(name);
+          if (!mounted) {
+            return;
+          }
+          setState(() {
+            _serverName = name;
+          });
+        }
+      },
+    );
+  }
+
+  String _loadServerName() {
+    if (_proServerIds.contains(_serverName)) {
+      return _serverName;
+    }
+    final parts = _serverName.split('|');
+    if (parts.length == 2 &&
+        _proServerIdPattern.hasMatch(parts[0]) &&
+        _proServerRegionPattern.hasMatch(parts[1])) {
+      return parts[0];
+    }
+    return _defaultProServerId;
   }
 }
