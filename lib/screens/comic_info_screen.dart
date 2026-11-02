@@ -20,6 +20,7 @@ class ComicInfoScreen extends StatefulWidget {
 
 class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   late Future<ComicInfoResult> _future;
+  late Future<FetchComicResult> _chaptersFuture;
   late Future<int> _postionFuture;
   late Future<bool> _hasDownloadFuture;
 
@@ -47,6 +48,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   @override
   void initState() {
     _future = _loadComic();
+    _chaptersFuture = methods.comicChapters(widget.comicSimple.id);
     _postionFuture = methods.loadViewLog(widget.comicSimple.id);
     _hasDownloadFuture = methods.hasDownload(widget.comicSimple.id);
     super.initState();
@@ -88,12 +90,18 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                   } else {
                     return IconButton(
                       onPressed: () async {
-                        var confirm =
-                            await confirmDialog(context, "下载", "下载这个漫画吗？");
+                        var targets = <ComicSimple>[widget.comicSimple];
+                        var tip = "下载这个漫画吗？";
+                        try {
+                          final chapters = await _chaptersFuture;
+                          if (chapters.comics.isNotEmpty) {
+                            targets = chapters.comics.map(_chapterComic).toList();
+                            tip = "这是合集，下载全部 ${targets.length} 话吗？";
+                          }
+                        } catch (_) {}
+                        var confirm = await confirmDialog(context, "下载", tip);
                         if (confirm) {
-                          await methods.pushToDownloads([
-                            widget.comicSimple,
-                          ]);
+                          await methods.pushToDownloads(targets);
                           setState(() {
                             _hasDownloadFuture =
                                 methods.hasDownload(widget.comicSimple.id);
@@ -150,6 +158,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       onRefresh: () async {
         setState(() {
           _future = _loadComic();
+          _chaptersFuture = methods.comicChapters(widget.comicSimple.id);
           _postionFuture = methods.loadViewLog(widget.comicSimple.id);
         });
       },
@@ -235,6 +244,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 children: (item.comicInfo.tags.map(_buildTag)).toList(),
               ),
             ),
+            _chapterList(),
           ],
         );
       },
@@ -242,44 +252,45 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 
   Widget _readContinueButton() {
-    return FutureBuilder(
-      key: const Key("CONTINUE_READ_BUTTON"),
-      future: _postionFuture,
-      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            !snapshot.hasError) {
-          final position = snapshot.requireData;
-          if (position > 0) {
-            return SafeArea(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 100,
-                    bottom: 30,
-                  ),
-                  child: FloatingActionButton(
-                    heroTag: "comic_info_continue_read",
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return ComicReaderScreen(
-                          comic: widget.comicSimple,
-                          initRank: position,
-                          loadResult: () {
-                            return methods.comicPages(widget.comicSimple.id);
-                          },
-                        );
-                      }));
-                    },
-                    child: const Icon(Icons.auto_stories),
-                  ),
-                ),
-              ),
-            );
-          }
+    return FutureBuilder<FetchComicResult>(
+      future: _chaptersFuture,
+      builder: (context, chapterSnap) {
+        final isSeries = chapterSnap.connectionState == ConnectionState.done &&
+            (chapterSnap.data?.comics.isNotEmpty ?? false);
+        if (isSeries) {
+          return Container();
         }
-        return Container();
+        return FutureBuilder(
+          key: const Key("CONTINUE_READ_BUTTON"),
+          future: _postionFuture,
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasError) {
+              final position = snapshot.requireData;
+              if (position > 0) {
+                return SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 100,
+                        bottom: 30,
+                      ),
+                      child: FloatingActionButton(
+                        heroTag: "comic_info_continue_read",
+                        onPressed: () {
+                          _openReader(widget.comicSimple, initRank: position);
+                        },
+                        child: const Icon(Icons.auto_stories),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+            return Container();
+          },
+        );
       },
     );
   }
@@ -293,16 +304,26 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           return FloatingActionButton(
             key: const Key("READ_BUTTON"),
             heroTag: "comic_info_read",
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return ComicReaderScreen(
-                  comic: widget.comicSimple,
-                  loadResult: () {
-                    return methods.comicPages(widget.comicSimple.id);
-                  },
-                );
-              }));
+            onPressed: () async {
+              var target = widget.comicSimple;
+              var initRank = 0;
+              try {
+                final chapters = await _chaptersFuture;
+                if (chapters.comics.isNotEmpty) {
+                  final series = chapters.comics.map(_chapterComic).toList();
+                  target = series.first;
+                  initRank = await methods.loadViewLog(target.id);
+                  _openReader(
+                    target,
+                    initRank: initRank,
+                    chapters: series,
+                    chapterIndex: 0,
+                    series: widget.comicSimple,
+                  );
+                  return;
+                }
+              } catch (_) {}
+              _openReader(target, initRank: initRank);
             },
             child: const Icon(Icons.menu_book),
           );
@@ -369,6 +390,86 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           );
         }
         return Container();
+      },
+    );
+  }
+
+  ComicSimple _chapterComic(ComicSimple chapter) {
+    return ComicSimple(
+      id: chapter.id,
+      title: chapter.title,
+      cover: chapter.cover.isNotEmpty ? chapter.cover : widget.comicSimple.cover,
+      favouriteId: chapter.favouriteId,
+    );
+  }
+
+  void _openReader(
+    ComicSimple comic, {
+    int initRank = 0,
+    List<ComicSimple> chapters = const [],
+    int chapterIndex = 0,
+    ComicSimple? series,
+  }) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+      return ComicReaderScreen(
+        comic: comic,
+        chapters: chapters,
+        chapterIndex: chapterIndex,
+        series: series,
+        initRank: initRank,
+        loadResult: () {
+          return methods.comicPages(comic.id);
+        },
+      );
+    }));
+  }
+
+  Widget _chapterList() {
+    return FutureBuilder<FetchComicResult>(
+      future: _chaptersFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done || snapshot.hasError) {
+          return const SizedBox.shrink();
+        }
+        final chapters = snapshot.data?.comics ?? [];
+        if (chapters.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(height: 10),
+            const Padding(
+              padding: EdgeInsets.only(left: 20, right: 20),
+              child: Text(
+                "章节",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ...chapters.asMap().entries.map((entry) {
+              final chapter = entry.value;
+              return ListTile(
+                title: Text(chapter.title),
+                trailing: const Icon(Icons.menu_book_outlined),
+                onTap: () async {
+                  final series = chapters.map(_chapterComic).toList();
+                  final comic = series[entry.key];
+                  var pos = 0;
+                  try {
+                    pos = await methods.loadViewLog(comic.id);
+                  } catch (_) {}
+                  _openReader(
+                    comic,
+                    initRank: pos,
+                    chapters: series,
+                    chapterIndex: entry.key,
+                    series: widget.comicSimple,
+                  );
+                },
+              );
+            }),
+          ],
+        );
       },
     );
   }

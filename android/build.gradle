@@ -25,6 +25,16 @@ subprojects {
 subprojects {
     project.evaluationDependsOn(':app')
 }
+subprojects { subproject ->
+    if (subproject.name == "app") {
+        return
+    }
+    subproject.afterEvaluate {
+        if (subproject.plugins.hasPlugin("com.android.library")) {
+            subproject.android.compileSdkVersion 34
+        }
+    }
+}
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir

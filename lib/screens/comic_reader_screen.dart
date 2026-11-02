@@ -34,6 +34,9 @@ class ComicReaderScreen extends StatefulWidget {
   final int initRank;
   final bool fullScreenOnInit;
   final Future<ComicPagesResult> Function() loadResult;
+  final List<ComicSimple> chapters;
+  final int chapterIndex;
+  final ComicSimple? series;
 
   const ComicReaderScreen({
     Key? key,
@@ -41,6 +44,9 @@ class ComicReaderScreen extends StatefulWidget {
     required this.loadResult,
     this.initRank = 0,
     this.fullScreenOnInit = false,
+    this.chapters = const [],
+    this.chapterIndex = 0,
+    this.series,
   }) : super(key: key);
 
   @override
@@ -52,6 +58,26 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
   late ReaderDirection _readerDirection;
   late Future<ComicPagesResult> _resultFuture;
 
+  bool get _hasNextChapter =>
+      widget.chapterIndex >= 0 &&
+      widget.chapterIndex + 1 < widget.chapters.length;
+
+  void _openChapter(int index, bool fullScreen) {
+    final chapter = widget.chapters[index];
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (BuildContext context) {
+        return ComicReaderScreen(
+          comic: chapter,
+          chapters: widget.chapters,
+          chapterIndex: index,
+          series: widget.series,
+          fullScreenOnInit: fullScreen,
+          loadResult: () => methods.comicPages(chapter.id),
+        );
+      }),
+    );
+  }
+
   void _load() {
     setState(() {
       _readerType = currentReaderType;
@@ -62,7 +88,13 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
 
   @override
   void initState() {
-    methods.updateViewLog(widget.comic.id, widget.initRank);
+    final series = widget.series;
+    if (series != null) {
+      methods.saveViewInfo(series);
+      methods.saveChapterProgress(widget.comic.id, widget.initRank);
+    } else {
+      methods.updateViewLog(widget.comic.id, widget.initRank);
+    }
     _load();
     super.initState();
   }
@@ -105,12 +137,19 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
                   return ComicReaderScreen(
                     loadResult: widget.loadResult,
                     comic: widget.comic,
+                    chapters: widget.chapters,
+                    chapterIndex: widget.chapterIndex,
+                    series: widget.series,
                     initRank: index,
                     fullScreenOnInit: fullScreen,
                   );
                 }),
               );
             },
+            onNextChapter: _hasNextChapter
+                ? (fullScreen) => _openChapter(widget.chapterIndex + 1, fullScreen)
+                : null,
+            recordChapterProgress: widget.series != null,
             readerType: _readerType,
             readerDirection: _readerDirection,
             fullScreenOnInit: widget.fullScreenOnInit,
@@ -192,6 +231,8 @@ class _ComicReader extends StatefulWidget {
   final ComicSimple comic;
   final ComicPagesResult pagesResult;
   final FutureOr Function(int, bool) reload;
+  final void Function(bool fullScreen)? onNextChapter;
+  final bool recordChapterProgress;
   final int startIndex;
   final ReaderType readerType;
   final ReaderDirection readerDirection;
@@ -205,6 +246,8 @@ class _ComicReader extends StatefulWidget {
     required this.readerType,
     required this.readerDirection,
     required this.fullScreenOnInit,
+    this.onNextChapter,
+    this.recordChapterProgress = false,
     Key? key,
   }) : super(key: key);
 
@@ -259,10 +302,12 @@ abstract class _ComicReaderState extends State<_ComicReader> {
       setState(() {
         _current = index;
         _slider = index;
-        var _ = methods.updateViewLog(
-          widget.comic.id,
-          index,
-        ); // 在后台线程入库
+        var _ = widget.recordChapterProgress
+            ? methods.saveChapterProgress(widget.comic.id, index)
+            : methods.updateViewLog(
+                widget.comic.id,
+                index,
+              ); // 在后台线程入库
       });
     }
   }
@@ -630,7 +675,7 @@ abstract class _ComicReaderState extends State<_ComicReader> {
                         IconButton(
                           icon: const Icon(Icons.skip_next_outlined),
                           color: Colors.white,
-                          onPressed: _onCloseAction,
+                          onPressed: _onNextOrClose,
                         ),
                         Container(width: 15),
                       ],
@@ -826,6 +871,17 @@ abstract class _ComicReaderState extends State<_ComicReader> {
   void _onCloseAction() {
     Navigator.of(context).pop();
   }
+
+  void _onNextOrClose() {
+    final next = widget.onNextChapter;
+    if (next != null) {
+      next(_fullScreen);
+    } else {
+      _onCloseAction();
+    }
+  }
+
+  String get _nextEpText => widget.onNextChapter != null ? '下一章' : '结束阅读';
 
   //
   double _appBarHeight() {
@@ -1277,11 +1333,11 @@ class _ComicReaderWebToonState extends _ComicReaderState {
       color: Colors.transparent,
       padding: const EdgeInsets.all(20),
       child: MaterialButton(
-        onPressed: super._onCloseAction,
+        onPressed: super._onNextOrClose,
         textColor: Colors.white,
         child: Container(
           padding: const EdgeInsets.only(top: 40, bottom: 40),
-          child: const Text('结束阅读'),
+          child: Text(super._nextEpText),
         ),
       ),
     );
@@ -1397,10 +1453,10 @@ class _ComicReaderGalleryState extends _ComicReaderState {
             color: Color(0x88000000),
           ),
           child: GestureDetector(
-            onTap: super._onCloseAction,
-            child: const Text(
-              '结束阅读',
-              style: TextStyle(color: Colors.white),
+            onTap: super._onNextOrClose,
+            child: Text(
+              super._nextEpText,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -1609,11 +1665,11 @@ class _ListViewReaderState extends _ComicReaderState
     return Container(
       padding: const EdgeInsets.all(20),
       child: MaterialButton(
-        onPressed: super._onCloseAction,
+        onPressed: super._onNextOrClose,
         textColor: Colors.white,
         child: Container(
           padding: const EdgeInsets.only(top: 40, bottom: 40),
-          child: const Text('结束阅读'),
+          child: Text(super._nextEpText),
         ),
       ),
     );
@@ -1798,10 +1854,10 @@ class _ComicReaderTwoPageGalleryState extends _ComicReaderState {
             color: Color(0x88000000),
           ),
           child: GestureDetector(
-            onTap: super._onCloseAction,
-            child: const Text(
-              '结束阅读',
-              style: TextStyle(color: Colors.white),
+            onTap: super._onNextOrClose,
+            child: Text(
+              super._nextEpText,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),

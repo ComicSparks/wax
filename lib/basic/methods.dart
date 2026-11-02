@@ -183,6 +183,16 @@ class Methods {
     return ComicInfoResult.fromBuffer(buff);
   }
 
+  Future<FetchComicResult> comicChapters($fixnum.Int64 id) async {
+    final buff = await _flatInvoke(
+        "comicChapters",
+        ComicInfoQuery(
+          host: host,
+          id: id,
+        ));
+    return FetchComicResult.fromBuffer(buff);
+  }
+
   Future<ComicPagesResult> comicPages($fixnum.Int64 id) async {
     final buff = await _flatInvoke(
         "comicPages",
@@ -201,6 +211,14 @@ class Methods {
           username: username,
           password: password,
         ));
+  }
+
+  /// 把浏览器登录后采集到的 Cookie 交给后端，并校验是否已经登录。
+  Future setCookies(String cookieString) {
+    return _flatInvoke(
+      "setCookies",
+      SavePropertyQuery(k: host, v: cookieString),
+    );
   }
 
   Future register({
@@ -270,6 +288,17 @@ class Methods {
     );
   }
 
+  /// 合集内某一话的页码。不单独进入历史列表。
+  Future saveChapterProgress($fixnum.Int64 id, int initRank) async {
+    return _flatInvoke(
+      "saveChapterProgress",
+      ComicViewLogDto(
+        comicId: id,
+        position: $fixnum.Int64(initRank),
+      ),
+    );
+  }
+
   Future<int> loadViewLog($fixnum.Int64 id) async {
     var buffer = await _flatInvoke(
       "loadComicViewLog",
@@ -287,7 +316,8 @@ class Methods {
       ComicViewLogDto(
         comicId: id,
       ),
-    )).value;
+    ))
+        .value;
   }
 
   Future<Map<String, bool>> hasViewLogs(List<$fixnum.Int64> ids) async {

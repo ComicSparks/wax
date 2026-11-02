@@ -63,3 +63,11 @@ target/
 
 tmp/
 ios/out
+
+# Python probe (uv / patchright)
+.venv/
+__pycache__/
+*.py[cod]
+.python-version
+uv.lock
+scripts/site_probe/
