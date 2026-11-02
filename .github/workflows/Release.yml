@@ -28,25 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          repository: ${{ github.event.inputs.repo }}
-          ref: 'master'
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.17'
-      - name: Cache go modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
       - name: Check release
-        run: |
-          cd ci
-          go run ./cmd/check_release
+        run: bash scripts/github_release.sh check-release
 
   build_release_assets:
     name: Build release assets
@@ -76,49 +59,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup golang
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.23'
-
-      - name: Cache go modules (Linux/Android)
-        if: matrix.config.target == 'android' || matrix.config.target == 'linux'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache go modules (macOS/ios)
-        if: matrix.config.target == 'macos' || matrix.config.target == 'ios'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/Library/Caches/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache go modules (Windows)
-        if: matrix.config.target == 'windows'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~\AppData\Local\go-build
-            ~\go\pkg\mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
       - id: check_asset
         name: Check asset
-        run: |
-          cd ci
-          go run ./cmd/check_asset
+        shell: bash
+        run: bash scripts/github_release.sh check-asset
 
       - name: Setup flutter
         if: steps.check_asset.outputs.skip_build != 'true'
@@ -263,9 +207,8 @@ jobs:
 
       - name: Upload Asset (All)
         if: steps.check_asset.outputs.skip_build != 'true'
-        run: |
-          cd ci
-          go run ./cmd/upload_asset
+        shell: bash
+        run: bash scripts/github_release.sh upload-asset
 
 
   send_to_community:
@@ -275,19 +218,4 @@ jobs:
     name: Send message to community
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: ${{ github.event.inputs.repo }}
-          ref: 'master'
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.23'
-      - name: Cache go modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+      - run: exit 0
