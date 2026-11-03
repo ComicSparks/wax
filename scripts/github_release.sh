@@ -109,7 +109,7 @@ check_asset() {
   name="$(asset_name)"
   if ASSET_NAME="$name" RELEASE_JSON="$release_json" python3 - << 'PY'
 import json, os, sys
-data = json.load(open(os.environ["RELEASE_JSON"]))
+data = json.load(open(os.environ["RELEASE_JSON"], encoding="utf-8"))
 names = [asset.get("name") for asset in data.get("assets") or []]
 sys.exit(0 if os.environ["ASSET_NAME"] in names else 1)
 PY
@@ -134,7 +134,7 @@ upload_asset() {
   fi
   path="$(asset_path)"
   name="$(asset_name)"
-  release_id="$(RELEASE_JSON="$release_json" python3 -c 'import json,os; print(json.load(open(os.environ["RELEASE_JSON"]))["id"])')"
+  release_id="$(RELEASE_JSON="$release_json" python3 -c 'import json,os; print(json.load(open(os.environ["RELEASE_JSON"], encoding="utf-8"))["id"])')"
   upload_status="$(curl -sS -o "$upload_json" -w '%{http_code}' \
     -X POST "${auth[@]}" \
     -H "Content-Type: application/octet-stream" \
