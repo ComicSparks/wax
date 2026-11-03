@@ -1,4 +1,7 @@
 # Miscellaneous
+.wax-release.json
+.wax-release-create.json
+.wax-upload.json
 *.class
 *.log
 *.pyc

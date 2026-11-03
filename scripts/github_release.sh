@@ -18,9 +18,13 @@ fi
 tag="v${version_name}"
 
 auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" -H "User-Agent: wax ci")
+# Keep these next to the repo. Git Bash /tmp and Windows Python do not share one path.
+release_json=".wax-release.json"
+create_json=".wax-release-create.json"
+upload_json=".wax-upload.json"
 
 fetch_release() {
-  curl -sS -o /tmp/wax-release.json -w '%{http_code}' \
+  curl -sS -o "$release_json" -w '%{http_code}' \
     "${auth[@]}" \
     "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${tag}"
 }
@@ -57,7 +61,7 @@ check_release() {
     exit 0
   fi
   if [ "$status" != "404" ]; then
-    cat /tmp/wax-release.json >&2
+    cat "$release_json" >&2
     echo "unexpected status ${status}" >&2
     exit 1
   fi
@@ -74,13 +78,13 @@ print(json.dumps({
 PY
 )"
   local create_status
-  create_status="$(curl -sS -o /tmp/wax-release-create.json -w '%{http_code}' \
+  create_status="$(curl -sS -o "$create_json" -w '%{http_code}' \
     -X POST "${auth[@]}" \
     -H "Content-Type: application/json" \
     -d "$body" \
     "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases")"
   if [ "$create_status" != "201" ]; then
-    cat /tmp/wax-release-create.json >&2
+    cat "$create_json" >&2
     echo "create release failed: ${create_status}" >&2
     exit 1
   fi
@@ -99,13 +103,13 @@ check_asset() {
     exit 1
   fi
   if [ "$status" != "200" ]; then
-    cat /tmp/wax-release.json >&2
+    cat "$release_json" >&2
     exit 1
   fi
   name="$(asset_name)"
-  if ASSET_NAME="$name" python3 - << 'PY'
+  if ASSET_NAME="$name" RELEASE_JSON="$release_json" python3 - << 'PY'
 import json, os, sys
-data = json.load(open("/tmp/wax-release.json"))
+data = json.load(open(os.environ["RELEASE_JSON"]))
 names = [asset.get("name") for asset in data.get("assets") or []]
 sys.exit(0 if os.environ["ASSET_NAME"] in names else 1)
 PY
@@ -125,19 +129,19 @@ upload_asset() {
   status="$(fetch_release)"
   if [ "$status" != "200" ]; then
     echo "NOT FOUND RELEASE" >&2
-    cat /tmp/wax-release.json >&2
+    cat "$release_json" >&2
     exit 1
   fi
   path="$(asset_path)"
   name="$(asset_name)"
-  release_id="$(python3 -c 'import json; print(json.load(open("/tmp/wax-release.json"))["id"])')"
-  upload_status="$(curl -sS -o /tmp/wax-upload.json -w '%{http_code}' \
+  release_id="$(RELEASE_JSON="$release_json" python3 -c 'import json,os; print(json.load(open(os.environ["RELEASE_JSON"]))["id"])')"
+  upload_status="$(curl -sS -o "$upload_json" -w '%{http_code}' \
     -X POST "${auth[@]}" \
     -H "Content-Type: application/octet-stream" \
     --data-binary @"${path}" \
     "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?name=${name}")"
   if [ "$upload_status" != "201" ]; then
-    cat /tmp/wax-upload.json >&2
+    cat "$upload_json" >&2
     echo "upload failed: ${upload_status}" >&2
     exit 1
   fi
