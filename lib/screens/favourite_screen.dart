@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
+import 'package:wax/configs/content_convert.dart';
 import 'package:wax/basic/methods.dart';
 
 import 'package:wax/src/rust/api/types.dart';
@@ -61,7 +62,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
     }
     final items = <Entity<int>>[
       Entity("全部", 0),
-      ..._partitions.map((e) => Entity(e.name, e.id)),
+      ..._partitions.map((e) => Entity(ccConvert(e.name), e.id)),
     ];
     final chosen = await chooseEntity<int>(
       context,
@@ -107,11 +108,17 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
               const Text("收藏"),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  _currentPartitionName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: _partitionId == 0
+                    ? Text(
+                        _currentPartitionName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : CcText(
+                        _currentPartitionName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
               ),
               const SizedBox(width: 4),
               Icon(Icons.arrow_drop_down),
@@ -261,7 +268,7 @@ class _FavoritesPartitionManageSheetState
                     ..._partitions.map(
                       (p) => ListTile(
                         leading: Icon(Icons.folder),
-                        title: Text(p.name),
+                        title: CcText(p.name),
                         subtitle: Text("ID: ${p.id}"),
                         selected: widget.currentPartitionId == p.id,
                         onTap: () => Navigator.of(context).pop(p.id),
@@ -275,7 +282,7 @@ class _FavoritesPartitionManageSheetState
                             if (value == "delete") {
                               final choose = await chooseListDialog<String>(
                                 context,
-                                title: "删除收藏夹 ${p.name} ?",
+                                title: "删除收藏夹 ${ccConvert(p.name)} ?",
                                 values: ["删除", "取消"],
                               );
                               if (choose != "删除") {

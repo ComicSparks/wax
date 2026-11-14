@@ -7,6 +7,7 @@ import 'package:wax/screens/components/recommend_links_panel.dart';
 import 'package:wax/screens/pro_screen.dart';
 
 import '../configs/app_orientation.dart';
+import '../configs/content_convert.dart';
 import '../configs/auto_clean.dart';
 import '../configs/full_screen_page_number.dart';
 import '../configs/is_pro.dart';
@@ -49,6 +50,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           lightThemeSetting(),
           darkThemeSetting(),
+          contentConvertSetting(),
           const Divider(),
           const Divider(),
           noReaderAnimeSetting(),

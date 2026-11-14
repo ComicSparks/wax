@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../basic/commons.dart';
+import '../configs/content_convert.dart';
 import '../basic/methods.dart';
 import 'package:wax/src/rust/api/types.dart';
 import 'browser_screen.dart';
@@ -53,7 +54,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.e.title),
+        title: CcText(widget.e.title),
       ),
       body: Stack(
         children: [
@@ -98,7 +99,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                   Container(height: 20),
                   Container(
                     margin: const EdgeInsets.only(left: 20, right: 20),
-                    child: Text(
+                    child: CcText(
                       widget.e.title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -264,7 +265,7 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen>
                   color: Colors.grey.withAlpha(20),
                   padding: const EdgeInsets.only(
                       top: 4, bottom: 4, left: 4, right: 4),
-                  child: Text(tag),
+                  child: CcText(tag),
                 ),
               ),
             ),

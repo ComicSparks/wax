@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wax/src/rust/api/types.dart';
 import '../../basic/methods.dart';
+import 'package:wax/configs/content_convert.dart';
 import '../../configs/reader_controller_type.dart';
 import '../../configs/reader_direction.dart';
 import '../../configs/reader_scroll_by_screen_percentage.dart';
@@ -729,7 +730,7 @@ abstract class _ComicReaderState extends State<_ComicReader> {
   Widget _buildAppBar() => _fullScreen
       ? Container()
       : AppBar(
-          title: Text(widget.comic.title),
+          title: CcText(widget.comic.title),
           actions: [
             IconButton(
               onPressed: _onMoreSetting,

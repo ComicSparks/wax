@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wax/src/rust/api/types.dart';
 
 import '../../basic/commons.dart';
+import '../../configs/content_convert.dart';
 import 'images.dart';
 
 // todo 加载本地cover
@@ -51,9 +52,9 @@ class DownloadInfoCard extends StatelessWidget {
                         onLongPress: () {
                           confirmCopy(context, comic.title);
                         },
-                        child: Text(comic.title, style: titleStyle),
+                        child: CcText(comic.title, style: titleStyle),
                       )
-                    : Text(comic.title, style: titleStyle),
+                    : CcText(comic.title, style: titleStyle),
                 Container(height: 4),
                 Row(children: [
                   Text(

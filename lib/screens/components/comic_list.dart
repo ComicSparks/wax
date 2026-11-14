@@ -5,6 +5,7 @@ import 'package:wax/basic/methods.dart';
 import 'package:wax/src/rust/api/types.dart';
 import 'package:wax/screens/components/images.dart';
 import '../../basic/commons.dart';
+import '../../configs/content_convert.dart';
 import '../../configs/pager_column_number.dart';
 import '../../configs/pager_view_mode.dart';
 import '../comic_info_screen.dart';
@@ -299,7 +300,7 @@ class _ComicListState extends State<ComicList> {
                         padding: const EdgeInsets.all(3),
                         color: Colors.black.withAlpha(180),
                         width: constraints.maxWidth,
-                        child: Text(
+                        child: CcText(
                           "${widget.data[i].title}\n",
                           maxLines: 2,
                           textAlign: TextAlign.center,
@@ -422,7 +423,7 @@ class _ComicListState extends State<ComicList> {
                 width: width,
                 height: 50,
                 padding: const EdgeInsets.only(left: 5, right: 5, bottom: 10),
-                child: Text(
+                child: CcText(
                   "${widget.data[i].title}\n",
                   maxLines: 2,
                   textAlign: TextAlign.center,

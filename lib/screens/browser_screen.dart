@@ -13,6 +13,7 @@ import 'package:wax/screens/rank_screen.dart';
 import 'package:wax/screens/search_screen.dart';
 
 import '../basic/cates.dart';
+import '../configs/content_convert.dart';
 import '../configs/is_pro.dart';
 import '../configs/versions.dart';
 import 'components/actions.dart';
@@ -75,7 +76,7 @@ class _BrowserScreenState extends State<BrowserScreen>
     },
     buildDefaultAppBar: (BuildContext context) {
       return AppBar(
-        title: Text(_title()),
+        title: _tag == "" && _cate == "" ? Text(_title()) : CcText(_title()),
         actions: [
           PopupMenuButton<String>(
             icon: Icon(

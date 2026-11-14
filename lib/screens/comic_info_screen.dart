@@ -3,6 +3,7 @@ import 'package:wax/basic/methods.dart';
 import 'package:wax/src/rust/api/types.dart';
 
 import '../basic/commons.dart';
+import '../configs/content_convert.dart';
 import 'browser_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/actions.dart';
@@ -64,7 +65,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.comicSimple.title),
+        title: CcText(widget.comicSimple.title),
         actions: [
           FutureBuilder(
             future: _future,
@@ -199,7 +200,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 onLongPress: () {
                   confirmCopy(context, widget.comicSimple.title);
                 },
-                child: Text(
+                child: CcText(
                   widget.comicSimple.title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -363,7 +364,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                     final chosen = await chooseEntity<FavoritesPartitionDto>(
                       context,
                       "选择收藏夹",
-                      partitions.map((e) => Entity(e.name, e)).toList(),
+                      partitions.map((e) => Entity(ccConvert(e.name), e)).toList(),
                     );
                     if (chosen == null) {
                       return;
@@ -449,7 +450,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             ...chapters.asMap().entries.map((entry) {
               final chapter = entry.value;
               return ListTile(
-                title: Text(chapter.title),
+                title: CcText(chapter.title),
                 trailing: const Icon(Icons.menu_book_outlined),
                 onTap: () async {
                   final series = chapters.map(_chapterComic).toList();
@@ -494,7 +495,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                   color: Colors.grey.withAlpha(20),
                   padding: const EdgeInsets.only(
                       top: 4, bottom: 4, left: 4, right: 4),
-                  child: Text(tag),
+                  child: CcText(tag),
                 ),
               ),
             ),
@@ -523,7 +524,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                   color: Colors.grey.withAlpha(20),
                   padding: const EdgeInsets.only(
                       top: 4, bottom: 4, left: 4, right: 4),
-                  child: Text(tag),
+                  child: CcText(tag),
                 ),
               ),
             ),

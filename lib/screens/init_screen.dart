@@ -9,6 +9,7 @@ import 'package:wax/configs/pager_view_mode.dart';
 import 'package:wax/configs/recommend_links.dart';
 
 import '../configs/android_display_mode.dart';
+import '../configs/content_convert.dart';
 import '../configs/android_version.dart';
 import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
@@ -73,6 +74,7 @@ class _InitScreenState extends State<InitScreen> {
     await reloadIsPro();
     await initDownloadThreadCount();
     await initAppOrientation();
+    await initContentConvert();
     autoCheckNewVersion();
     await initLogin();
     if (await methods.loadProperty(k: "last_username") == "" &&
