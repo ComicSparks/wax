@@ -56,7 +56,6 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   intl: ^0.20.2
   window_manager: ^0.4.3
-  flutter_opencc_plus: ^0.1.4
 
 dev_dependencies:
   flutter_test:

@@ -28,7 +28,7 @@
 
 ### 构建环境
 
-- [Flutter](https://flutter.dev/) 3.47.0（Dart 3.10 及以上）
+- [Flutter](https://flutter.dev/) 3.38.4（Dart 3.10 及以上）
 - [Rust](https://www.rust-lang.org/) stable
 - flutter_rust_bridge 2.12.0
 
