@@ -71,7 +71,7 @@ class MainActivity : FlutterActivity() {
                     "androidGetExtendDirs" -> androidGetExtendDirs()
                     "androidSecureFlag" -> androidSecureFlag(call.argument("flag")!!)
                     "verifyAuthentication" -> auth()
-                    "androidDownloadNotice" -> androidDownloadNotice(call.argument("flag") == true)
+                    "androidDownloadNotice" -> androidDownloadNotice(call.argument<Boolean>("flag") == true)
                     else -> notImplementedToken
                 }
             }
