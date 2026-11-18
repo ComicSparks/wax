@@ -1,9 +1,21 @@
 import 'package:event/event.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../basic/commons.dart';
 import '../basic/methods.dart';
+
+const _pageTransitions = PageTransitionsTheme(
+  builders: {
+    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.fuchsia: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+  },
+);
 
 final _pink = ThemeData.light(useMaterial3: false).copyWith(
   brightness: Brightness.light,
@@ -30,6 +42,7 @@ final _pink = ThemeData.light(useMaterial3: false).copyWith(
     unselectedItemColor: Colors.grey[500],
   ),
   dividerColor: Colors.grey.shade200,
+  pageTransitionsTheme: _pageTransitions,
   primaryColor: Colors.pink.shade200,
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.pink.shade200,
@@ -45,7 +58,7 @@ final _pink = ThemeData.light(useMaterial3: false).copyWith(
 
 final _dark = ThemeData.dark(useMaterial3: false).copyWith(
   brightness: Brightness.dark,
-  colorScheme: ColorScheme.light(
+  colorScheme: ColorScheme.dark(
     secondary: Colors.pink.shade200,
   ),
   listTileTheme: const ListTileThemeData(
@@ -65,6 +78,7 @@ final _dark = ThemeData.dark(useMaterial3: false).copyWith(
     unselectedItemColor: Colors.grey.shade300,
     backgroundColor: Colors.grey.shade900,
   ),
+  pageTransitionsTheme: _pageTransitions,
   primaryColor: Colors.pink.shade200,
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.pink.shade200,
