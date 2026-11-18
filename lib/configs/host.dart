@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:wax/basic/commons.dart';
 import 'package:wax/basic/methods.dart';
 
-const _defaultHost = "https://www.wn01.cfd";
+const _defaultHost = "https://www.cloudwn.shop";
 const _hostMap = {
+  "https://www.cloudwn.shop": "CLOUDSHOP",
+  "https://www.wnmanga.shop": "MANGASHOP",
+  "https://www.wnacg.buzz": "ACGBUZZ",
+  "https://www.wnacg.site": "ACGSITE",
   "https://www.wnacg05.cc": "05CC",
   "https://www.wn01.cfd": "01CFD",
   "https://www.wn01.shop": "01SHOP",
