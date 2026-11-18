@@ -16,10 +16,16 @@ bool _syncing = false;
 
 Future<void> initDownloadForegroundNotice() async {
   downloadForegroundNotice =
-      (await methods.loadProperty(k: _propertyName)) == "true";
-  if (downloadForegroundNotice && Platform.isAndroid) {
-    _ensureWatching();
+      (await methods.loadProperty(k: _propertyName)) != "false";
+  if (!downloadForegroundNotice || !Platform.isAndroid) {
+    return;
   }
+  if (!await _ensureNotificationPermission()) {
+    downloadForegroundNotice = false;
+    await methods.saveProperty(k: _propertyName, v: "false");
+    return;
+  }
+  _ensureWatching();
 }
 
 void _ensureWatching() {
