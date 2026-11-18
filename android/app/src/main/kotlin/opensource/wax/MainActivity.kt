@@ -1,6 +1,7 @@
 package opensource.wax
 
 import android.content.ContentValues
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.hardware.biometrics.BiometricPrompt
@@ -70,6 +71,7 @@ class MainActivity : FlutterActivity() {
                     "androidGetExtendDirs" -> androidGetExtendDirs()
                     "androidSecureFlag" -> androidSecureFlag(call.argument("flag")!!)
                     "verifyAuthentication" -> auth()
+                    "androidDownloadNotice" -> androidDownloadNotice(call.argument("flag") == true)
                     else -> notImplementedToken
                 }
             }
@@ -247,6 +249,25 @@ class MainActivity : FlutterActivity() {
             }
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    private fun androidDownloadNotice(on: Boolean) {
+        uiThreadHandler.post {
+            try {
+                val intent = Intent(this, DownloadNoticeService::class.java)
+                if (on) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(intent)
+                    } else {
+                        startService(intent)
+                    }
+                } else {
+                    stopService(intent)
+                }
+            } catch (e: Exception) {
+                Log.e("Method", "download notice", e)
+            }
+        }
     }
 
     private fun androidSecureFlag(flag: Boolean) {

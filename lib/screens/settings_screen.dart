@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:wax/configs/host.dart';
 import 'package:wax/configs/themes.dart';
@@ -9,6 +11,7 @@ import 'package:wax/screens/pro_screen.dart';
 import '../configs/app_orientation.dart';
 import '../configs/content_convert.dart';
 import '../configs/auto_clean.dart';
+import '../configs/download_foreground_notice.dart';
 import '../configs/full_screen_page_number.dart';
 import '../configs/is_pro.dart';
 import '../configs/login_state.dart';
@@ -61,6 +64,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           viewLogCleanSetting(),
           autoCleanSetting(),
+          if (Platform.isAndroid) downloadForegroundNoticeSetting(),
           const Divider(),
         ],
       ),

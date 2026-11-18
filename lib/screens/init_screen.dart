@@ -13,6 +13,7 @@ import '../configs/content_convert.dart';
 import '../configs/android_version.dart';
 import '../configs/app_orientation.dart';
 import '../configs/auto_clean.dart';
+import '../configs/download_foreground_notice.dart';
 import '../configs/download_thread_count.dart';
 import '../configs/full_screen_page_number.dart';
 import '../configs/drag_region_lock.dart';
@@ -73,6 +74,7 @@ class _InitScreenState extends State<InitScreen> {
     await initNoReaderAnime();
     await reloadIsPro();
     await initDownloadThreadCount();
+    await initDownloadForegroundNotice();
     await initAppOrientation();
     await initContentConvert();
     autoCheckNewVersion();

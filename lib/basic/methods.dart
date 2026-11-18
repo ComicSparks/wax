@@ -230,6 +230,13 @@ class Methods {
     return rust.deleteDownloadById(id: comicId);
   }
 
+  Future androidDownloadNotice(bool on) {
+    if (!Platform.isAndroid) {
+      return Future.value();
+    }
+    return _channel.invokeMethod("androidDownloadNotice", {"flag": on});
+  }
+
   Future<LoginUser> loginUser() {
     return rust.loginUser(host: host);
   }
