@@ -147,6 +147,18 @@ jobs:
         if: steps.check_asset.outputs.skip_build != 'true'
         run: flutter pub get
 
+      - name: Write bundled version
+        if: steps.check_asset.outputs.skip_build != 'true'
+        shell: bash
+        run: |
+          mkdir -p lib/assets
+          name="$(awk '/^version:/ { print $2; exit }' pubspec.yaml | cut -d+ -f1)"
+          if [[ "$name" == v* ]]; then
+            printf '%s\n' "$name" > lib/assets/version.txt
+          else
+            printf 'v%s\n' "$name" > lib/assets/version.txt
+          fi
+
       - name: Build (windows)
         if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'windows'
         run: |

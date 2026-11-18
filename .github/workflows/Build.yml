@@ -121,6 +121,17 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Write bundled version
+        shell: bash
+        run: |
+          mkdir -p lib/assets
+          name="$(awk '/^version:/ { print $2; exit }' pubspec.yaml | cut -d+ -f1)"
+          if [[ "$name" == v* ]]; then
+            printf '%s\n' "$name" > lib/assets/version.txt
+          else
+            printf 'v%s\n' "$name" > lib/assets/version.txt
+          fi
+
       - name: Build (windows)
         if: matrix.config.target == 'windows'
         run: |

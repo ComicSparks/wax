@@ -8,7 +8,7 @@ import 'package:wax/basic/methods.dart';
 import '../basic/commons.dart';
 import '../screens/components/badge.dart';
 
-final _pubspecVersion = RegExp(r'^version:\s*(\d+\.\d+\.\d+)', multiLine: true);
+const _versionAssets = 'lib/assets/version.txt';
 RegExp _versionExp = RegExp(r"^v\d+\.\d+.\d+$");
 
 Future _openRelease() async {
@@ -25,11 +25,8 @@ String? _latestVersionInfo;
 String? _downloadUrl;
 
 Future initVersion() async {
-  // 当前版本
   try {
-    final pubspec = await rootBundle.loadString('pubspec.yaml');
-    final match = _pubspecVersion.firstMatch(pubspec);
-    _version = match == null ? "dirty" : "v${match.group(1)}";
+    _version = (await rootBundle.loadString(_versionAssets)).trim();
   } catch (e) {
     _version = "dirty";
   }
@@ -94,6 +91,22 @@ class VersionInfo extends StatefulWidget {
 }
 
 class _VersionInfoState extends State<VersionInfo> {
+  @override
+  void initState() {
+    versionEvent.subscribe(_onVersion);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    versionEvent.unsubscribe(_onVersion);
+    super.dispose();
+  }
+
+  void _onVersion(dynamic a) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
