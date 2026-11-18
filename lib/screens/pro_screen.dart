@@ -200,6 +200,7 @@ class _ProScreenState extends State<ProScreen> {
           const Divider(),
           ...patPro(),
           const Divider(),
+          ReferralTiles(username: _username),
         ],
       ),
     );
@@ -425,4 +426,125 @@ class _ProServerNameWidgetState extends State<ProServerNameWidget> {
     }
     return _defaultProServerId;
   }
+}
+
+class ReferralTiles extends StatefulWidget {
+  final String username;
+
+  const ReferralTiles({Key? key, required this.username}) : super(key: key);
+
+  @override
+  State<ReferralTiles> createState() => _ReferralTilesState();
+}
+
+class _ReferralTilesState extends State<ReferralTiles> {
+  bool _busy = false;
+  String _referrer = "";
+  int _unbindWaitDays = 0;
+  int _campaignStart = 0;
+  int _campaignEnd = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final raw = await methods.referralCall('{"action":"local"}');
+      if (!mounted || raw.isEmpty) return;
+      _apply(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {}
+  }
+
+  void _apply(Map<String, dynamic> data) {
+    setState(() {
+      _referrer = (data["referrer"] ?? "").toString();
+      _unbindWaitDays = int.tryParse("${data["unbind_wait_days"]}") ?? 0;
+      _campaignStart = int.tryParse("${data["campaign_start"]}") ?? 0;
+      _campaignEnd = int.tryParse("${data["campaign_end"]}") ?? 0;
+    });
+  }
+
+  Future<void> _referral(String payload, String ok) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final raw = await methods.referralCall(payload);
+      if (!mounted) return;
+      if (raw.isNotEmpty) {
+        _apply(jsonDecode(raw) as Map<String, dynamic>);
+      }
+      defaultToast(context, ok);
+    } catch (e) {
+      if (mounted) defaultToast(context, _referralError(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  String _when(int seconds) {
+    if (seconds <= 0) return "";
+    return DateFormat("yyyy-MM-dd HH:mm").format(
+      DateTime.fromMillisecondsSinceEpoch(seconds * 1000, isUtc: true).toLocal(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final campaign = _campaignStart > 0 && _campaignEnd > 0
+        ? "${_when(_campaignStart)} — ${_when(_campaignEnd)}"
+        : "";
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          title: const Text("推荐人"),
+          subtitle: Text(_referrer),
+          onTap: () async {
+            if (widget.username.isEmpty) {
+              defaultToast(context, "先登录");
+              return;
+            }
+            if (_referrer.isNotEmpty || _busy) return;
+            final name = await displayTextInputDialog(context, title: "填写推荐人用户名");
+            if (name == null || name.trim().isEmpty || !mounted) return;
+            await _referral(
+              jsonEncode({"action": "bind", "referrer": name.trim()}),
+              "已绑定",
+            );
+          },
+          onLongPress: () async {
+            if (_referrer.isEmpty || _busy) return;
+            if (_unbindWaitDays > 0) {
+              defaultToast(context, "还要等 $_unbindWaitDays 天才能解绑");
+              return;
+            }
+            final ok = await confirmDialog(context, "解绑推荐人", "确定解绑推荐人？");
+            if (!ok || !mounted) return;
+            await _referral('{"action":"unbind"}', "已解绑");
+          },
+        ),
+        ListTile(
+          title: const Text("活动时间"),
+          subtitle: Text(campaign),
+        ),
+      ],
+    );
+  }
+}
+
+String _referralError(Object error) {
+  final text = "$error";
+  if (text.contains("REFERRER_SELF")) return "不能填自己";
+  if (text.contains("REFERRER_MUTUAL")) return "不能互相推荐";
+  if (text.contains("REFERRER_LOCKED")) return "已经绑定了推荐人";
+  if (text.contains("REFERRER_UNBIND_WAIT:")) {
+    final days = text.split("REFERRER_UNBIND_WAIT:").last.split(RegExp(r"\D")).first;
+    return "还要等 $days 天才能解绑";
+  }
+  if (text.contains("REFERRER_NOT_BOUND")) return "还没有推荐人";
+  if (text.contains("please login")) return "先登录";
+  return "失败";
 }

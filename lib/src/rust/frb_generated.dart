@@ -181,6 +181,10 @@ abstract class RustLibApi extends BaseApi {
 
   Future<String> crateApiWaxGetProServerName();
 
+  Future<String> crateApiWaxAppConfig();
+
+  Future<String> crateApiWaxReferralCall({required String payload});
+
   Future<bool> crateApiWaxHasComicViewLog({required PlatformInt64 comicId});
 
   Future<List<ComicViewedMark>> crateApiWaxHasComicViewLogs({
@@ -1146,6 +1150,61 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiWaxGetProServerNameConstMeta =>
       const TaskConstMeta(debugName: "get_pro_server_name", argNames: []);
+
+  @override
+  Future<String> crateApiWaxAppConfig() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 61,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiWaxAppConfigConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWaxAppConfigConstMeta =>
+      const TaskConstMeta(debugName: "app_config", argNames: []);
+
+  @override
+  Future<String> crateApiWaxReferralCall({required String payload}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(payload, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 62,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiWaxReferralCallConstMeta,
+        argValues: [payload],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWaxReferralCallConstMeta =>
+      const TaskConstMeta(debugName: "referral_call", argNames: ["payload"]);
 
   @override
   Future<bool> crateApiWaxHasComicViewLog({required PlatformInt64 comicId}) {

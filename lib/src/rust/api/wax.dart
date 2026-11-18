@@ -87,6 +87,11 @@ Future<void> autoClean({required PlatformInt64 expire}) =>
 Future<String> httpGet({required String url}) =>
     RustLib.instance.api.crateApiWaxHttpGet(url: url);
 
+Future<String> appConfig() => RustLib.instance.api.crateApiWaxAppConfig();
+
+Future<String> referralCall({required String payload}) =>
+    RustLib.instance.api.crateApiWaxReferralCall(payload: payload);
+
 Future<void> login({
   required String host,
   required String username,

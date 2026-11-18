@@ -9,8 +9,6 @@ import 'package:wax/src/rust/api/wax.dart' as rust;
 
 final methods = Methods._();
 
-const _waxConfigUrl = "https://cdn.comicsparks.work/cfg/wax";
-
 class Methods {
   Methods._();
 
@@ -100,7 +98,7 @@ class Methods {
   }
 
   Future<Map<String, dynamic>> fetchWaxConfig() async {
-    final content = (await httpGet(url: _waxConfigUrl)).trim();
+    final content = (await rust.appConfig()).trim();
     if (content.isEmpty) {
       return {};
     }
@@ -109,6 +107,10 @@ class Methods {
       return {};
     }
     return Map<String, dynamic>.from(decoded);
+  }
+
+  Future<String> referralCall(String payload) {
+    return rust.referralCall(payload: payload);
   }
 
   Future cleanAllCache() async {}
